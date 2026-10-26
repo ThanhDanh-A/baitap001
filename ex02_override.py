@@ -6,7 +6,7 @@ Mục tiêu: Ghi đè phương thức, gọi class cha
 
 
 # ==============================================================================
-# TODO 1 & TODO 2: Override __str__ và phương thức tính lương
+# PHẦN 1 & 2: Override __str__ và phương thức tính lương
 # ==============================================================================
 class NhanVien:
     def __init__(self, ten, luong):
@@ -43,7 +43,7 @@ class TapSu(NhanVien):
 
 
 # ==============================================================================
-# TODO 3: Dùng super().__init__() với Vehicle và ElectricCar
+# PHẦN 3: Dùng super().__init__() với Vehicle và ElectricCar
 # ==============================================================================
 class Vehicle:
     def __init__(self, name, speed):
@@ -68,7 +68,7 @@ class ElectricCar(Vehicle):
 
 
 # ==============================================================================
-# TODO 4 (Thử thách): Template Method Pattern
+# PHẦN 4 (Thử thách): Template Method Pattern
 # ==============================================================================
 class Report:
     """generate() cố định thứ tự tạo báo cáo; lớp con tùy chỉnh từng phần."""
@@ -103,22 +103,22 @@ class TextReport(Report):
 
 
 def main():
-    print("=== TODO 1: Override __str__ ===")
+    print("=== PHẦN 1: Override __str__ ===")
     nhan_vien = NhanVien("An", 10_000_000)
     quan_ly = QuanLy("Bình", 20_000_000, "Kỹ thuật")
     print(nhan_vien)
     print(quan_ly)
 
-    print("\n=== TODO 2: Override tính lương ===")
+    print("\n=== PHẦN 2: Override tính lương ===")
     tap_su = TapSu("Châu", 8_000_000)
     for nguoi in [nhan_vien, quan_ly, tap_su]:
         print(f"{nguoi.ten}: {nguoi.tinh_luong():,.0f} đồng")
 
-    print("\n=== TODO 3: super().__init__() ===")
+    print("\n=== PHẦN 3: super().__init__() ===")
     xe_dien = ElectricCar("Xe điện", 160, 75)
     print(xe_dien)
 
-    print("\n=== TODO 4: Template Method Pattern ===")
+    print("\n=== PHẦN 4: Template Method Pattern ===")
     print("-- Báo cáo HTML --")
     print(HTMLReport().generate())
     print("-- Báo cáo văn bản --")
