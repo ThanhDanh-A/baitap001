@@ -103,6 +103,15 @@ class HinhChuNhat(HinhHoc):
 # ==============================================================================
 # PHẦN 3: Kiểm tra quan hệ kế thừa bằng isinstance() và issubclass()
 # ==============================================================================
+def kiem_tra_ke_thua(doi_tuong):
+    """In kết quả kiểm tra đối tượng có thuộc class cha/con hay không."""
+    print(f"isinstance(doi_tuong, DongVat): {isinstance(doi_tuong, DongVat)}")
+    print(f"isinstance(doi_tuong, Cho): {isinstance(doi_tuong, Cho)}")
+    print(f"issubclass(Cho, DongVat): {issubclass(Cho, DongVat)}")
+    print(f"issubclass(Meo, DongVat): {issubclass(Meo, DongVat)}")
+    print(f"issubclass(DongVat, Cho): {issubclass(DongVat, Cho)}")
+
+
 # ==============================================================================
 # PHẦN 4: Đa kế thừa với Flyer, Swimmer và Duck
 # ==============================================================================
@@ -141,11 +150,7 @@ def main():
         print(hinh)
 
     print("\n=== PHẦN 3: Kiểm tra kế thừa ===")
-    print(f"isinstance(cho, DongVat): {isinstance(cho, DongVat)}")
-    print(f"isinstance(cho, Cho): {isinstance(cho, Cho)}")
-    print(f"issubclass(Cho, DongVat): {issubclass(Cho, DongVat)}")
-    print(f"issubclass(Meo, DongVat): {issubclass(Meo, DongVat)}")
-    print(f"issubclass(DongVat, Cho): {issubclass(DongVat, Cho)}")
+    kiem_tra_ke_thua(cho)
 
     print("\n=== PHẦN 4: Đa kế thừa ===")
     vit = Duck("Vịt Donald")
