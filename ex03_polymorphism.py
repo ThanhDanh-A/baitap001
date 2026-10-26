@@ -8,7 +8,7 @@ import math
 
 
 # ==============================================================================
-# TODO 1: Đa hình qua method chung
+# PHẦN 1: Đa hình qua method chung
 # ==============================================================================
 class HinhTron:
     def __init__(self, ban_kinh):
@@ -53,7 +53,7 @@ class HinhTamGiac:
 
 
 # ==============================================================================
-# TODO 2: Đa hình với "hợp đồng" thanh toán
+# PHẦN 2: Đa hình với "hợp đồng" thanh toán
 # ==============================================================================
 class ThanhToan:
     def phuong_thuc(self):
@@ -97,7 +97,7 @@ def thanh_toan(don_hang, phuong_thuc):
 
 
 # ==============================================================================
-# TODO 3: Duck typing — object nào có speak() đều dùng được
+# PHẦN 3: Duck typing — object nào có speak() đều dùng được
 # ==============================================================================
 class Cho:
     def speak(self):
@@ -124,7 +124,7 @@ def goi_speak(obj):
 
 
 # ==============================================================================
-# TODO 4 (Thử thách): Hệ thống nhân viên và đa hình tính lương
+# PHẦN 4 (Thử thách): Hệ thống nhân viên và đa hình tính lương
 # ==============================================================================
 class NhanVien:
     def __init__(self, ten):
@@ -174,22 +174,22 @@ def tong_luong(danh_sach_nhan_vien):
 
 
 def main():
-    print("=== TODO 1: Đa hình qua method chung ===")
+    print("=== PHẦN 1: Đa hình qua method chung ===")
     cac_hinh = [HinhTron(5), HinhChuNhat(4, 6), HinhTamGiac(3, 4, 5)]
     for hinh in cac_hinh:
         print(f"{type(hinh).__name__}: diện tích = {hinh.tinh_dien_tich():.2f}")
 
-    print("\n=== TODO 2: Đa hình thanh toán ===")
+    print("\n=== PHẦN 2: Đa hình thanh toán ===")
     cac_phuong_thuc = [TienMat(), TheNganHang(), ViDienTu()]
     for phuong_thuc in cac_phuong_thuc:
         thanh_toan(250_000, phuong_thuc)
         print()
 
-    print("=== TODO 3: Duck typing ===")
+    print("=== PHẦN 3: Duck typing ===")
     for doi_tuong in [Cho(), Meo(), Robot()]:
         goi_speak(doi_tuong)
 
-    print("\n=== TODO 4: Đa hình tính lương nhân viên ===")
+    print("\n=== PHẦN 4: Đa hình tính lương nhân viên ===")
     danh_sach = [
         FullTime("An", 12_000_000),
         PartTime("Bình", 80, 30_000),
