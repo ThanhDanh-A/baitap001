@@ -1,20 +1,20 @@
-# Tuần 13: OOP cơ bản — Class & Object 🏗️
+# Tuần 14: OOP nâng cao — Kế thừa & Đa hình 🧬
 
-> *"Mọi thứ trong Python đều là object." — Guido van Rossum*
+> *"Tái sử dụng code là nghệ thuật, không phải sao chép." — Unknown*
 
 ## 🎯 Mục tiêu tuần này
 
 Sau tuần này, bạn sẽ:
 
-- Giải thích OOP là gì và tại sao dùng
-- Định nghĩa class và tạo object
-- Viết `__init__`, instance methods, `__str__`
-- Phân biệt instance variable và class variable
-- Thiết kế class cho bài toán thực tế
+- Dùng kế thừa (inheritance) để tái sử dụng code
+- Ghi đè (override) phương thức từ class cha
+- Gọi class cha với `super()`
+- Hiểu đa hình (polymorphism) và ứng dụng
+- Thiết kế hệ thống class có kế thừa
 
 ## 📖 Kiến thức cần nắm
 
-class, object, __init__, self, instance methods, __str__, __repr__, class variable
+inheritance, super(), method overriding, polymorphism, isinstance(), abstract concept
 
 Chi tiết xem tại [`notes.md`](notes.md)
 
@@ -22,15 +22,15 @@ Chi tiết xem tại [`notes.md`](notes.md)
 
 Mở thư mục `exercises/` và hoàn thành theo thứ tự:
 
-1. **`ex01_classes.py`** — Định nghĩa class đầu tiên
-2. **`ex02_methods.py`** — Methods và __str__
-3. **`ex03_design.py`** — Thiết kế class cho bài toán
+1. **`ex01_inheritance.py`** — Kế thừa cơ bản
+2. **`ex02_override.py`** — Override và super()
+3. **`ex03_polymorphism.py`** — Đa hình trong thực tế
 
 > 💡 Mỗi file có TODO comment hướng dẫn chi tiết. Hãy thử trước khi xem solutions!
 
-## 🚀 Mini-Project: Hệ thống thư viện 📚
+## 🚀 Mini-Project: Hệ thống ngân hàng 🏦
 
-Quản lý sách: class Book, Library với CRUD, tìm kiếm, thống kê
+Account → SavingsAccount / CheckingAccount, gửi/rút/chuyển/lịch sử
 
 Xem chi tiết tại [`mini-project/README.md`](mini-project/README.md)
 
@@ -38,14 +38,14 @@ Xem chi tiết tại [`mini-project/README.md`](mini-project/README.md)
 
 | Nguồn | Chương | Link |
 |:------|:-------|:-----|
-| Think Python | Chapter 14: Classes and Objects | [Đọc](https://allendowney.github.io/ThinkPython/chap14.html) |
+| Think Python | Chapter 17: Inheritance | [Đọc](https://allendowney.github.io/ThinkPython/chap17.html) |
 
 ## ✅ Checklist cuối tuần
 
 - [ ] Đọc notes.md
-- [ ] Hoàn thành `ex01_classes.py`
-- [ ] Hoàn thành `ex02_methods.py`
-- [ ] Hoàn thành `ex03_design.py`
+- [ ] Hoàn thành `ex01_inheritance.py`
+- [ ] Hoàn thành `ex02_override.py`
+- [ ] Hoàn thành `ex03_polymorphism.py`
 - [ ] Hoàn thành Mini-Project
 - [ ] Commit code lên GitHub
 - [ ] Đánh dấu trong PROGRESS.md
