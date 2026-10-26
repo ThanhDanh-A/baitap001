@@ -1,0 +1,1400 @@
+
+=== PAGE 1 ===
+ 
+ 
+Hãy dựng lại y đúc 1 slide theo thông số dưới đây vào file PowerPoint đang mở. Mọi số liệu được trích 
+trực tiếp từ XML gốc (file "Slide_animation_promo_v2.pptx"), EMU nguyên gốc, không làm tròn. Không 
+được "sửa" toạ độ âm hay shape nằm ngoài slide: đó là shape chờ của animation. 
+ 
+0. TỔNG QUAN FILE GỐC 
+- Kích thước slide: <p:sldSz cx="12192000" cy="6858000"/> (16:9, 960×540 pt) 
+- Số slide: 1. Layout gốc: "Blank" (slideLayout7). Nền: đen 000000. 
+- Transition: KHÔNG có (không Morph, không auto-advance). 
+- Animation: 1 dòng thời gian tự chạy khi vào slide (After Previous, ~25,7 giây), 349 hiệu ứng (bay vào, 
+mờ, wipe, zoom, xoay, motion path, nhấp nháy theo chữ), 164 mục bldP. 
+- Shape: 130 shape cấp cao nhất trong spTree, 178 shape tính cả shape con trong group (14 group). 
+- Ảnh: 10 shape PIC dùng 4 file PNG thật (1024×1024). KHÔNG có icon SVG; các "icon" ở cảnh C8 
+được vẽ bằng shape có sẵn trong group, không cần insert_icon. 
+- Font dùng trên slide: Segoe UI, Segoe UI Semibold. Một số ký tự emoji (🎙 🖼        ) hiển thị 
+qua font dự phòng Segoe UI Emoji. 
+ 
+Phân cảnh (theo tiền tố tên shape; thời gian = delay trong dòng thời gian, ms): 
+  Cảnh | Shape cấp cao | Tổng shape (cả con) | Hiệu ứng | Khoảng thời gian 
+  C1   |   7 |   7 |  16 |     0 –  1850  Logo mở đầu (nền trắng/xám/đen, logo to, 
+glow, icon) 
+  C2   |  21 |  41 |  91 |  1750 –  5650  Trang App Store: tên app, nút Open, 3 ô 
+thống kê, 4 thẻ review (group) 
+  C3   |   9 |  13 |  31 |  4600 – 13750  Icon xám → thanh nhập giọng nói (pill, 
+mic, sóng âm) 
+  C4   |  20 |  20 |  44 |  7900 – 13800  Giao diện chat: menu trái, ô nhập, chip 
+gợi ý, câu hỏi gõ từng chữ 
+  C5   |  20 |  22 |  42 | 13650 – 17000  Câu trả lời 16 dòng hiện lần lượt 
+(wipe), bóng chat, đốm sáng 
+  C6   |   3 |   3 |   9 | 17200 – 18500  Logo + 2 dòng chữ lớn trượt ngang 
+  C7   |  28 |  28 |  58 | 18450 – 19850  Lưới 9 app icon + nhãn "My Name Is [Tên] 
+ChatGPT [Họ]" 
+  C8   |  17 |  39 |  52 | 19500 – 22650  Nền xanh, 3 nút GENERATE / THINK / WRITE 
++ icon vẽ bằng shape 
+  C9   |   5 |   5 |   6 | 22750 – 25700  Kết: logo + chữ "ChatGPT" 
+=== PAGE 2 ===
+ 
+ 
+  TỔNG | 130 | 178 | 349 | 
+ 
+1. BẢNG ĐỐI CHIẾU (đã kiểm tra bằng code, không 
+bằng mắt) 
+Cách kiểm tra: giải mã ngược toàn bộ phần DỮ LIỆU (mục 8) bằng đúng BỘ GIẢI MÃ ở mục 7, rồi so 
+từng chuỗi XML (đã chuẩn hoá namespace) với XML gốc. 
+  Hạng mục                         | XML gốc | Spec  | Khớp 
+  Shape cấp cao trong spTree       |   130   |  130  | 130/130 giống từng ký tự 
+  Tổng shape (sp/pic/grpSp, cả con) |   178   |  178  | có 
+  Hiệu ứng animation (p:par preset)|   349   |  349  | có 
+  Mục bldP                         |   164   |  164  | có 
+  <p:timing> toàn bộ               |    1    |   1   | giống từng ký tự 
+  Toàn bộ <p:sld>                  |    1    |   1   | giống từng ký tự 
+Mã kiểm tra (FNV-1a 32-bit trên mã UTF-16, hàm fnv ở mục 7): 
+  - Toàn bộ phần DỮ LIỆU (từ dòng "SLDNS" đến dòng "G1 = ..."; các dòng nối bằng "\n", không có 
+xuống dòng cuối): fnv = 81fddb77, độ dài 63128 ký tự 
+  - Bộ giải mã (hàm decodeSlideSpec): fnv = 752f442d, độ dài 3401 ký tự 
+  - Kết quả giải mã khi chạy THỬ với imgRid = 
+{"image1.png":"rId2","image2.png":"rId3","image3.png":"rId4","image4.png":"rId5"} (rId g ốc): 
+      spTreeInner: fnv = 69f19ccc, độ dài 101584 
+      timing:      fnv = 305dc2cf, độ dài 225393 
+      counts:      topShapes 130, allShapes 178, effects 349, bld 164 
+ 
+2. ẢNH CẦN FILE GỐC (bắt buộc gửi kèm) 
+Prompt chỉ ghi được vị trí/kích thước; 4 file PNG phải được đính kèm. Lấy từ file gốc: đổi đuôi .pptx 
+→ .zip, mở thư mục ppt/media. 
+  File        | Byte   | Pixel     | Dùng cho shape (id "tên") 
+  image1.png  | 142041 | 1024×1024 | 5 "C1_logo_to" (softEdge 38100) 
+  image2.png  | 141478 | 1024×1024 | 8 "C1_logo", 10 "C2_logo", 131 "C7_logo", 134 
+"C7_logo_nho", 176 "C9_logo" 
+  image3.png  | 142377 | 1024×1024 | 51 "C3_logo_xam" 
+=== PAGE 3 ===
+ 
+ 
+  image4.png  | 141567 | 1024×1024 | 63 "C4_logo_menu", 87 "C5_logo_ai" (glow), 
+105 "C6_logo" (glow) 
+Nếu thiếu ảnh: vẫn dựng được mọi thứ khác; thay tạm bằng 1 ảnh bất kỳ rồi báo người dùng. 
+ 
+3. QUY TRÌNH DỰNG (dành cho Claude trong 
+PowerPoint) 
+B1. THEME — edit_slide_master, sửa ppt/theme/theme1.xml: thay nguyên 
+<a:clrScheme>…</a:clrScheme> bằng khối ở mục 5; trong <a:fontScheme>, đặt <a:latin typeface> 
+của majorFont và minorFont = "Calibri". (Slide chỉ dùng màu hex cứng nên theme không đổi hình, 
+nhưng giữ cho đúng gốc.) Không đụng phần khác. 
+B2. SLIDE — thêm 1 slide bằng slides.add({layoutId}) với layout tên "Blank". Nếu file đang mở còn slide 
+khác, không xoá chúng. 
+B3. ẢNH — chọn slide mới (Office.context.document.goToByIdAsync), rồi insertImage lần lượt 
+image1.png, image2.png, image3.png, image4.png (đúng thứ tự này) lên slide đó. Đây là ảnh tạm để 
+PowerPoint tạo quan hệ ảnh; bước B5 sẽ ghi đè spTree nên chúng tự biến mất. 
+B4. NẠP DỮ LIỆU — phần DỮ LIỆU dài ~63 KB: chia thành nhiều lần execute_office_js, mỗi lần lưu một 
+đoạn liên tiếp (cắt ở ranh giới dòng): 
+      blobs.setText("spec_1", String.raw`<dán nguyên văn đoạn 1>`);  … spec_2, spec_3 … 
+    (Dữ liệu không chứa dấu ` , ${ hay \ nên String.raw an toàn.) Sau đó nối: const text = [spec_1, 
+spec_2, …].join("\n") và KIỂM TRA: fnv(text) phải = 81fddb77, text.length = 63128. Sai thì so lại từng 
+đoạn, KHÔNG được sửa số cho khớp. 
+    Chạy thử decodeSlideSpec(text, rId gốc ở mục 1) và đối chiếu 3 mã kiểm tra spTreeInner / timing / 
+counts. Chỉ khi khớp hết mới sang B5. 
+B5. DỰNG SLIDE — 1 lần edit_slide_xml trên slide mới: 
+    a) Đọc ppt/slides/slide1.xml, lấy các <p:pic> tạm theo thứ tự xuất hiện, đọc r:embed của chúng → 
+imgRid = {"image1.png": rId pic tạm thứ 1, "image2.png": thứ 2, "image3.png": thứ 3, "image4.png": 
+thứ 4}. 
+    b) const out = decodeSlideSpec(text, imgRid);  (text đọc từ blobs; nếu blobs không dùng được 
+trong edit_slide_xml thì dán DỮ LIỆU trực tiếp vào code.) 
+    c) Ghi đè: zip.file("ppt/slides/slide1.xml", '<?xml version="1.0" encoding="UTF-8" 
+standalone="yes"?>\r\n' + out.full); markDirty(). 
+       out.full = <p:sld …><p:cSld>{nền}<p:spTree>{gốc spTree + 130 shape đúng z-
+order}</p:spTree></p:cSld><p:clrMapOvr>…</p:clrMapOvr>{<p:timing>}</p:sld> 
+       Giữ nguyên file _rels (đã có layout + 4 ảnh). id của shape PHẢI giữ đúng như spec vì animation trỏ 
+vào spid. 
+=== PAGE 4 ===
+ 
+ 
+B6. KIỂM TRA — list_slide_shapes: đúng 130 shape cấp cao, tên đúng (C1_nen_trang … C9_ket). Xem 
+Animation Pane: 349 hiệu ứng, tất cả "With Previous", chạy tự động khi trình chiếu. verify_slides sẽ báo 
+chồng lấn và shape ngoài slide: đó là thiết kế (các cảnh xếp chồng, shape chờ ngoài khung như 
+C7_app1–3 ở y=-901700, C6_dong1/2 ở x=10477500 rộng 13970000), KHÔNG sửa. Không đổi font, 
+không autofit, không căn lại. 
+ 
+4. QUY TẮC DỰNG XML TỪ KÝ HIỆU GỌN (bộ 
+giải mã ở mục 7 làm đúng các quy tắc này) 
+Dòng meta: 
+  SLDNS <thẻ mở p:sld>   BG <p:bg> nguyên văn   ROOT nvGrpSpPr+grpSpPr của spTree   TAIL 
+<p:clrMapOvr> nguyên văn 
+Dòng shape (thứ tự dòng = z-order, dòng đầu ở dưới cùng): 
+  SP  id "tên" xfrm Nn Dn Bn ¶…   → <p:sp>{Nn}{Dn}<p:txBody>{Bn}{các đoạn}</p:txBody></p:sp> 
+  PIC id "tên" xfrm Nn Dn img=imageK.png → <p:pic>{Nn}{Dn}</p:pic>, §IMG trong Dn = rId của 
+imageK.png 
+  GROUP id "tên" xfrmGroup Nn Gn … END → <p:grpSp>{Nn}{Gn}{các shape con}</p:grpSp> (dòng 
+con thụt 2 dấu cách) 
+  (CXN = p:cxnSp: file này không có đường nối.) 
+  (Ghi id vì animation trỏ theo spid; tên giữ nguyên chính xác, kể cả chữ thường "c25"…) 
+xfrm:  x,y,cx,cy[;rot=…][;flipH=1][;flipV=1]  → <a:xfrm rot=".."><a:off x y/><a:ext cx cy/></a:xfrm>, 
+thay vào chỗ §X trong Dn 
+xfrmGroup: x,y,cx,cy/chx,chy,chcx,chcy[;rot=…] → thêm <a:chOff x y/><a:chExt cx cy/> sau a:ext 
+Nn: phần nv; thay §ID = id, §NM = tên (escape &,<,>,"). 
+Dn: spPr (và blipFill nếu là ảnh) nguyên văn, gồm prstGeom+avLst, fill, ln, effectLst. 
+Bn: <a:bodyPr …/><a:lstStyle/> nguyên văn. 
+Chữ:  ¶ = mở đoạn <a:p> mới;  [Pn] ngay sau ¶ = <a:pPr> của đoạn; 
+      {Rn}chữ = <a:r>{Rn}<a:t>chữ</a:t></a:r> (chữ kéo dài tới dấu { kế tiếp hoặc hết dòng, giữ 
+nguyên dấu cách); 
+      {Rn|end} = <a:endParaRPr …> (lấy Rn, đổi tên thẻ a:rPr → a:endParaRPr);  
+{Rn|br} = <a:br>{Rn}</a:br>. 
+Animation: 
+  TSKEL = khung <p:timing>; §E = nơi đặt 349 hiệu ứng, §BLD = nơi đặt <p:bldLst>. 
+=== PAGE 5 ===
+ 
+ 
+  E An v1|v2|… → lấy mẫu An, thay §1 = v1, §2 = v2 … (dòng "E A10 " không có tham 
+số). 
+  BLD spid:grpId … → <p:bldP spid=".." grpId=".." animBg="1"/>. 
+  Sau khi ghép xong, đánh id cho mọi <p:cTn> theo thứ tự xuất hiện 1, 2, 3, … (id là thuộc tính đầu 
+tiên). 
+ 
+5. THEME (ppt/theme/theme1.xml của file gốc) 
+clrScheme (thay nguyên khối): 
+<a:clrScheme name="Office"><a:dk1><a:sysClr val="windowText" 
+lastClr="000000"/></a:dk1><a:lt1><a:sysClr val="window" 
+lastClr="FFFFFF"/></a:lt1><a:dk2><a:srgbClr 
+val="1F497D"/></a:dk2><a:lt2><a:srgbClr 
+val="EEECE1"/></a:lt2><a:accent1><a:srgbClr 
+val="4F81BD"/></a:accent1><a:accent2><a:srgbClr 
+val="C0504D"/></a:accent2><a:accent3><a:srgbClr 
+val="9BBB59"/></a:accent3><a:accent4><a:srgbClr 
+val="8064A2"/></a:accent4><a:accent5><a:srgbClr 
+val="4BACC6"/></a:accent5><a:accent6><a:srgbClr 
+val="F79646"/></a:accent6><a:hlink><a:srgbClr 
+val="0000FF"/></a:hlink><a:folHlink><a:srgbClr 
+val="800080"/></a:folHlink></a:clrScheme> 
+fontScheme name="Office": majorFont <a:latin typeface="Calibri"/><a:ea typeface=""/><a:cs 
+typeface=""/> ; minorFont <a:latin typeface="Calibri"/><a:ea typeface=""/><a:cs typeface=""/>  
+ 
+6. LƯU Ý 
+- Font cần cài: Segoe UI, Segoe UI Semibold (có sẵn trên Windows; máy Mac phải cài, nếu không chữ 
+sẽ lệch khung). Emoji cần Segoe UI Emoji. 
+- Nội dung lặp phải sửa đồng bộ (cùng nội dung xuất hiện ở nhiều shape): 
+    "[Tên của bạn]": C4_ten (78), C5_dong01 (88), C6_dong1 (106)  |  "[Tên]": 
+C7_nhan4 (116)  |  "[Họ]": C7_nhan6 (120) 
+    "ChatGPT": C2_ten (14), C7_nhan5 (118), C9_ten_xam (177) + C9_ten_den (178) — cặp xám/đen phải 
+giống hệt nhau 
+    "Who’s the best PowerPoint editor?": C4_cauhoi (80) và C5_bubble (83) 
+    GENERATE: C8_chu1_xanh (141) + C8_chu1_den (142); THINK: 154 + 155; WRITE: 164 + 165 — mỗi 
+cặp phải giống hệt 
+    "Productive Beyond Measure / 15/03/2024 / Echo-MIND": review2 (33,35) và review4 (45,47) 
+=== PAGE 6 ===
+ 
+ 
+- Hiệu ứng gõ chữ (C4_tieude 79, C4_cauhoi 80) chạy theo từng chữ cái (iterate tmPct): đổi độ dài chữ 
+sẽ đổi nhịp. 
+- Motion path dùng toạ độ tương đối theo kích thước slide; nếu đổi kích thước slide, chuyển động sẽ 
+lệch. 
+- Ký tự đặc biệt trong chữ (’ “ ” — … ★ ▂▄▆ ◉ ‹ ✎ ⌕ ▭ ◎ ⋯ ↑ ⧉ ⤴ ⟳ •) phải giữ nguyên, không 
+đổi thành ký tự ASCII. 
+- Prompt này dùng công cụ của Claude trong PowerPoint (edit_slide_master, edit_slide_xml, 
+execute_office_js, insertImage). AI không chạy được code sẽ chỉ đoán và không ra y đúc. 
+- Cách y đúc tuyệt đối nhanh nhất: gửi kèm chính file .pptx gốc rồi yêu cầu chèn slide bằng 
+insertSlidesFromBase64; prompt này dùng khi chỉ có văn bản (cộng 4 ảnh). 
+ 
+7. BỘ GIẢI MÃ (dán nguyên văn vào code; đã kiểm 
+chứng tái tạo đúng 100%) 
+function fnv(str){let h=0x811c9dc5;for(let 
+i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0;}return 
+h.toString(16).padStart(8,"0");} 
+ 
+function decodeSlideSpec(text, imgRid){ 
+ const D={},meta={},shapes=[],eff=[];let bld=[]; 
+ for(const raw of text.split(/\r?\n/)){const l=raw.replace(/^\s+/,"");let m; 
+  if(!l||l[0]==="#")continue; 
+  if(m=l.match(/^([NDBRPGA]\d+) = (.*)$/)){D[m[1]]=m[2];continue;} 
+  if(m=l.match(/^(SLDNS|BG|ROOT|TAIL|TSKEL) (.*)$/)){meta[m[1]]=m[2];continue;} 
+  if(l.startsWith("E ")){eff.push(l);continue;} 
+  if(l.startsWith("BLD ")){bld=bld.concat(l.slice(4).trim().split(/\s+/));continue;} 
+  if(/^(SP|PIC|CXN|GROUP|END)\b/.test(l)){shapes.push(l);continue;} 
+  throw new Error("Dòng lạ: "+l.slice(0,80));} 
+ const esc=t=>t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); 
+ const escA=t=>esc(t).replace(/"/g,"&quot;"); 
+ const xf=(s,grp)=>{if(s==="-")return "";const [main,...at]=s.split(";");const 
+[a,b]=main.split("/");const [x,y,cx,cy]=a.split(","); 
+  const attrs=at.map(p=>{const i=p.indexOf("=");return ` 
+${p.slice(0,i)}="${p.slice(i+1)}"`;}).join(""); 
+  let r=`<a:xfrm${attrs}><a:off x="${x}" y="${y}"/><a:ext cx="${cx}" cy="${cy}"/>`; 
+  if(grp){const [X,Y,CX,CY]=b.split(",");r+=`<a:chOff x="${X}" y="${Y}"/><a:chExt cx="${CX}" 
+cy="${CY}"/>`;} 
+  return r+"</a:xfrm>";}; 
+ const nv=(n,id,name)=>D[n].replace("§ID",()=>id).replace("§NM",()=>escA(name)); 
+ const txt=t=>t.split("¶").slice(1).map(p=>{let o="<a:p>";const pm=p.match(/^\[(P\d+)\]/); 
+  if(pm){o+=D[pm[1]];p=p.slice(pm[0].length);} 
+  for(const m of p.matchAll(/\{([^}|]+)(?:\|(br|end))?\}([^{⟦]*)|⟦(.*?)⟧/g)){ 
+   if(m[4]!==undefined){o+=m[4];continue;} 
+   const r=m[1]==="-"?"":D[m[1]]; 
+   if(m[2]==="end")o+=r.replace(/^<a:rPr/,"<a:endParaRPr").replace(/<\/a:rPr>$/,"</a:endParaRPr>"); 
+   else if(m[2]==="br")o+=`<a:br>${r}</a:br>`; 
+   else o+=`<a:r>${r}<a:t>${esc(m[3])}</a:t></a:r>`;} 
+  return o+"</a:p>";}).join(""); 
+ const TAG={SP:"p:sp",PIC:"p:pic",CXN:"p:cxnSp"}; 
+ const stack=[[]]; 
+ for(const l of shapes){let m; 
+=== PAGE 7 ===
+ 
+ 
+  if(m=l.match(/^GROUP (\d+) "([^"]*)" (\S+) (N\d+) 
+(G\d+)$/)){stack.push([`<p:grpSp>${nv(m[4],m[1],m[2])}${D[m[5]].replace("§X",()=>xf(m[3],true))}`]);co
+ntinue;} 
+  if(l==="END"){const g=stack.pop();stack[stack.length-1].push(g.join("")+"</p:grpSp>");continue;} 
+  m=l.match(/^(SP|PIC|CXN) (\d+) "([^"]*)" (\S+) (N\d+) (D\d+)(?: img=(\S+))?(?: (B\d+) (.*))?$/); 
+  if(!m)throw new Error("Shape lỗi: "+l.slice(0,80)); 
+  let body=D[m[6]].replace("§X",()=>xf(m[4],false)); 
+  if(m[7])body=body.replace("§IMG",()=>imgRid[m[7]]); 
+  const tb=m[8]?`<p:txBody>${D[m[8]]}${txt(m[9])}</p:txBody>`:""; 
+  stack[stack.length-1].push(`<${TAG[m[1]]}>${nv(m[5],m[2],m[3])}${body}${tb}</${TAG[m[1]]}>`);} 
+ const effXml=eff.map(l=>{const sp=l.indexOf(" ",2);const a=sp<0?l.slice(2):l.slice(2,sp);const 
+vals=sp<0?[]:l.slice(sp+1).split("|"); 
+  return D[a].replace(/§(\d+)/g,(q,k)=>vals[k-1]);}).join(""); 
+ let k=0; 
+ const timing=meta.TSKEL.replace("§E",()=>effXml).replace("§BLD",()=>"<p:bldLst>"+bld.map(x=>{const 
+[s,g]=x.split(":");return `<p:bldP spid="${s}" grpId="${g}" animBg="1"/>`;}).join("")+"</p:bldLst>") 
+  .replace(/<p:cTn(?=[ >\/])/g,()=>`<p:cTn id="${++k}"`); 
+ const spTreeInner=meta.ROOT+stack[0].join(""); 
+ return {bg:meta.BG,spTreeInner,shapes:stack[0],timing,tail:meta.TAIL, 
+   
+full:`${meta.SLDNS}<p:cSld>${meta.BG}<p:spTree>${spTreeInner}</p:spTree></p:cSld>${meta.TAIL}${timing}
+</p:sld>`, 
+   
+counts:{topShapes:stack[0].length,allShapes:shapes.filter(x=>!x.startsWith("END")).length,effects:eff.
+length,bld:bld.length}}; 
+} 
+ 
+8. DỮ LIỆU (NỀN, SHAPE/BỐ CỤC, ANIMATION, 
+STYLE CHỮ Rn, ĐOẠN Pn, KHUNG CHỮ Bn, 
+ĐỊNH NGHĨA SHAPE Dn) 
+   Bắt đầu từ dòng "SLDNS", kết thúc ở dòng "G1 = …". Dòng bắt đầu bằng # là chú thích (bộ giải mã 
+bỏ qua) nhưng nằm trong mã kiểm tra. 
+SLDNS <p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" 
+xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" 
+xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"> 
+BG <p:bg><p:bgPr><a:solidFill><a:srgbClr val="000000"/></a:solidFill><a:effectLst/></p:bgPr></p:bg> 
+ROOT <p:nvGrpSpPr><p:cNvPr id="1" 
+name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" 
+cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr> 
+TAIL <p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr> 
+ 
+# --- SHAPE theo đúng z-order (dưới → trên) --- 
+SP 2 "C1_nen_trang" 0,0,12192000,6858000 N1 D1 B1 ¶{R1|end} 
+SP 3 "C1_nen_xam" 0,0,12192000,6858000 N1 D2 B1 ¶{R1|end} 
+SP 4 "C1_nen_den" 0,0,12192000,6858000 N1 D3 B1 ¶{R1|end} 
+PIC 5 "C1_logo_to" 3683000,1016000,4826000,4826000 N2 D4 img=image1.png 
+SP 6 "C1_glow" 5175250,2508250,1841500,1841500 N1 D5 B1 ¶{R1|end} 
+SP 7 "C1_icon" 5461000,2794000,1270000,1270000 N1 D6 B1 ¶{R1|end} 
+PIC 8 "C1_logo" 5683250,3016250,825500,825500 N2 D7 img=image2.png 
+SP 9 "C2_icon" 1311275,1552575,2127250,2127250 N1 D8 B1 ¶{R1|end} 
+PIC 10 "C2_logo" 1692275,1933575,1365250,1365250 N2 D7 img=image2.png 
+SP 11 "C2_gio" 1155700,330200,1016000,317500 N1 D9 B2 ¶[P1]{R2}9:41 
+SP 12 "C2_pin" 6413500,330200,1270000,317500 N1 D9 B2 ¶[P2]{R3}▂▄▆  ◉  {R4}62 
+SP 13 "C2_search" 1206500,1073150,1397000,317500 N1 D9 B2 ¶[P1]{R5}‹  Search 
+SP 14 "C2_ten" 3810000,1651000,3302000,469900 N1 D9 B2 ¶[P1]{R6}ChatGPT 
+SP 15 "C2_hang" 3810000,2108200,3302000,254000 N1 D9 B2 ¶[P1]{R7}OpenAI 
+=== PAGE 8 ===
+ 
+ 
+SP 16 "C2_open" 3746500,3095625,1308100,501650 N1 D10 B3 ¶[P3]{R8}Open 
+SP 17 "C2_share" 7073900,3302000,215900,254000 N1 D11 B1 ¶{R1|end} 
+SP 18 "C2_line1" 1333500,4076700,6350000,12700 N1 D12 B1 ¶{R1|end} 
+SP 19 "C2_stat1" 1130300,4286250,1905000,1079500 N1 D9 B2 ¶[P3]{R9}769K RATINGS¶[P3]{R10}4.8¶[P3]{R9}★
+★★★★ 
+SP 20 "C2_stat2" 3073400,4286250,1905000,1079500 N1 D9 B2 ¶[P3]{R9}AGE¶[P3]{R10}13+¶[P3]{R9}Years Old 
+SP 21 "C2_stat3" 4895850,4286250,1905000,1079500 N1 D9 B2 
+¶[P3]{R9}CHART¶[P3]{R10}No.1¶[P3]{R9}Productivity 
+SP 22 "C2_line2" 1333500,5492750,6350000,12700 N1 D12 B1 ¶{R1|end} 
+SP 23 "C2_whatsnew" 1397000,5695950,3175000,482600 N1 D9 B2 ¶[P1]{R11}What’s New 
+SP 24 "C2_version" 1397000,6280150,3175000,292100 N1 D9 B2 ¶[P1]{R12}Version 1.2026.104 
+SP 25 "C2_ngay" 5715000,6280150,1905000,292100 N1 D9 B2 ¶[P2]{R12}Apr 21st 
+GROUP 31 "C2_review1" 7835900,381000,4165600,1358900/7835900,381000,4165600,1358900 N3 G1 
+  SP 26 "c25" 7835900,381000,4165600,1358900 N1 D13 B1 ¶{R1|end} 
+  SP 27 "c26" 7950200,495300,2540000,215900 N1 D9 B3 ¶[P1]{R13}The best application I’ve used 
+  SP 28 "c27" 7950200,698500,2540000,190500 N1 D9 B3 ¶[P1]{R14}★★★★★ 
+  SP 29 "c28" 10318750,488950,1587500,381000 N1 D9 B3 ¶[P2]{R15}22/09/2023¶[P2]{R15}Sodium Lauryl 
+  SP 30 "c29" 8013700,933450,3810000,698500 N1 D9 B4 ¶[P1]{R16}I’ve never tried any application such 
+as useful as this one 
+END 
+GROUP 37 "C2_review2" 7835900,1955800,4165600,1358900/7835900,1955800,4165600,1358900 N3 G1 
+  SP 32 "c31" 7835900,1955800,4165600,1358900 N1 D13 B1 ¶{R1|end} 
+  SP 33 "c32" 7950200,2070100,2540000,215900 N1 D9 B3 ¶[P1]{R13}Productive Beyond Measure 
+  SP 34 "c33" 7950200,2273300,2540000,190500 N1 D9 B3 ¶[P1]{R14}★★★★★ 
+  SP 35 "c34" 10318750,2063750,1587500,381000 N1 D9 B3 ¶[P2]{R15}15/03/2024¶[P2]{R15}Echo-MIND 
+  SP 36 "c35" 8013700,2508250,3810000,698500 N1 D9 B4 ¶[P1]{R16}This tool has revolutionized my 
+workflow. I’m hitting deadlines I thought were impossible. A complete game-changer. 
+END 
+GROUP 43 "C2_review3" 7835900,3543300,4165600,1358900/7835900,3543300,4165600,1358900 N3 G1 
+  SP 38 "c37" 7835900,3543300,4165600,1358900 N1 D13 B1 ¶{R1|end} 
+  SP 39 "c38" 7950200,3657600,2540000,215900 N1 D9 B3 ¶[P1]{R13}Portable therapist 
+  SP 40 "c39" 7950200,3860800,2540000,190500 N1 D9 B3 ¶[P1]{R14}★★★★★ 
+  SP 41 "c40" 10318750,3651250,1587500,381000 N1 D9 B3 ¶[P2]{R15}09/02/2024¶[P2]{R15}kevv4psy 
+  SP 42 "c41" 8013700,4095750,3810000,698500 N1 D9 B4 ¶[P1]{R16}A truly supportive companion. It 
+provided great coping strategies and made me feel heard during a tough time. 
+END 
+GROUP 49 "C2_review4" 7835900,5143500,4165600,1358900/7835900,5143500,4165600,1358900 N3 G1 
+  SP 44 "c43" 7835900,5143500,4165600,1358900 N1 D13 B1 ¶{R1|end} 
+  SP 45 "c44" 7950200,5257800,2540000,215900 N1 D9 B3 ¶[P1]{R13}Productive Beyond Measure 
+  SP 46 "c45" 7950200,5461000,2540000,190500 N1 D9 B3 ¶[P1]{R14}★★★★★ 
+  SP 47 "c46" 10318750,5251450,1587500,381000 N1 D9 B3 ¶[P2]{R15}15/03/2024¶[P2]{R15}Echo-MIND 
+  SP 48 "c47" 8013700,5695950,3810000,698500 N1 D9 B4 ¶[P1]{R16}Productivity has soared! The 
+integration features are flawless, and I’ve reclaimed hours each week. 
+END 
+SP 50 "C3_icon_xam" -180975,2435225,2978150,2978150 N1 D14 B1 ¶{R1|end} 
+PIC 51 "C3_logo_xam" 352425,2968625,1911350,1911350 N2 D7 img=image3.png 
+SP 52 "C3_icon_toi" -180975,2435225,2978150,2978150 N1 D15 B1 ¶{R1|end} 
+SP 53 "C3_pill" 3714750,4527550,3619500,698500;rot=180000 N1 D16 B1 ¶{R1|end} 
+SP 54 "C3_bar" 2476500,4438650,6096000,838200 N1 D17 B1 ¶{R1|end} 
+SP 55 "C3_mic" 7835900,4502150,711200,711200 N1 D18 B1 ¶{R1|end} 
+SP 56 "C3_cham" 8128000,4794250,127000,127000 N1 D19 B1 ¶{R1|end} 
+SP 57 "C3_vach" 8159750,4711700,63500,292100 N1 D20 B1 ¶{R1|end} 
+GROUP 62 "C3_song" 8007350,4699000,368300,317500/8007350,4699000,368300,317500 N3 G1 
+  SP 58 "c57" 8029575,4787900,57150,139700 N1 D20 B1 ¶{R1|end} 
+  SP 59 "c58" 8118475,4711700,57150,292100 N1 D20 B1 ¶{R1|end} 
+  SP 60 "c59" 8207375,4749800,57150,215900 N1 D20 B1 ¶{R1|end} 
+  SP 61 "c60" 8296275,4800600,57150,114300 N1 D20 B1 ¶{R1|end} 
+END 
+PIC 63 "C4_logo_menu" 139700,203200,254000,254000 N2 D7 img=image4.png 
+SP 64 "C4_chon" 57150,666750,2247900,292100 N1 D21 B1 ¶{R1|end} 
+SP 65 "C4_menu1" 133350,673100,2095500,279400 N1 D9 B2 ¶[P1]{R17}✎   New project 
+SP 66 "C4_menu2" 133350,965200,2095500,279400 N1 D9 B2 ¶[P1]{R17}⌕   Find project 
+SP 67 "C4_menu3" 133350,1257300,2095500,279400 N1 D9 B2 ¶[P1]{R17}▭   Projects 
+=== PAGE 9 ===
+ 
+ 
+SP 68 "C4_menu4" 133350,1549400,2095500,279400 N1 D9 B2 ¶[P1]{R17}◎   Codex 
+SP 69 "C4_menu5" 133350,1841500,2095500,279400 N1 D9 B2 ¶[P1]{R17}⋯   More 
+SP 70 "C4_bar" 3521075,3000375,4095750,857250 N1 D22 B1 ¶{R1|end} 
+SP 71 "C4_cong" 3282950,3238500,254000,381000 N1 D9 B2 ¶[P3]{R18}+ 
+SP 72 "C4_goiy" 3727450,3238500,3683000,381000 N1 D9 B2 ¶[P1]{R7}Ask me anything 
+SP 73 "C4_mic_nho" 8051800,3238500,254000,381000 N1 D9 B2 ¶[P3]{R19}🎙 
+SP 74 "C4_chip1" 4451350,3962400,952500,304800 N1 D23 B3 ¶[P3]{R20}🖼  Generate 
+SP 75 "C4_chip2" 5645150,3962400,1206500,304800 N1 D23 B3 ¶[P3]{R20}✎  Write or edit 
+SP 76 "C4_chip3" 6902450,3962400,1016000,304800 N1 D23 B3 ¶[P3]{R20}   Research 
+SP 77 "C4_avatar" 139700,6343650,266700,266700 N1 D24 B1 ¶{R1|end} 
+SP 78 "C4_ten" 444500,6286500,1905000,381000 N1 D9 B2 ¶[P1]{R21}[Tên của bạn]¶[P1]{R22}Plus 
+SP 79 "C4_tieude" 3238500,2178050,5715000,444500 N1 D9 B2 ¶[P3]{R23}We will get started when you’re 
+ready 
+SP 80 "C4_cauhoi" 3810000,3238500,3810000,381000 N1 D9 B2 ¶[P1]{R24}Who’s the best PowerPoint editor? 
+SP 81 "C4_xoay" 8585200,3289300,279400,279400 N1 D25 B1 ¶{R1|end} 
+SP 82 "C4_muiten" 8534400,3206750,381000,444500 N1 D9 B2 ¶[P3]{R25}↑ 
+SP 83 "C5_bubble" 8032750,441325,3429000,857250 N1 D22 B3 ¶[P3]{R19}Who’s the best PowerPoint editor? 
+GROUP 86 "C5_dom_sang" 7937500,203200,2413000,2413000/7937500,203200,2413000,2413000 N3 G1 
+  SP 84 "c83" 7937500,203200,2413000,2413000 N1 D26 B1 ¶{R1|end} 
+  SP 85 "c84" 9099550,1365250,88900,88900 N1 D27 B1 ¶{R1|end} 
+END 
+PIC 87 "C5_logo_ai" 482600,1435100,304800,304800 N2 D28 img=image4.png 
+SP 88 "C5_dong01" 889000,1435100,10922000,304800 N1 D9 B2 ¶[P1]{R26}Yes — I know about {R27}“[Tên của 
+bạn]”{R26} as a Vietnamese TikTok creator known for {R28}making edits and animations with Microsoft 
+PowerPoint{R26}. 
+SP 89 "C5_dong02" 889000,1755775,10922000,304800 N1 D9 B2 ¶[P1]{R26}He became popular because people 
+were shocked that: 
+SP 90 "C5_dong03" 1365250,2076450,10922000,304800 N1 D9 B2 ¶[P1]{R29}• PowerPoint could be used for 
+TikTok edits, 
+SP 91 "C5_dong04" 1365250,2397125,10922000,304800 N1 D9 B2 ¶[P1]{R29}• transitions, 
+SP 92 "C5_dong05" 1365250,2717800,10922000,304800 N1 D9 B2 ¶[P1]{R29}• and even music-based 
+animations. 
+SP 93 "C5_dong06" 889000,3038475,10922000,304800 N1 D9 B2 ¶[P1]{R26}There are online discussions 
+mentioning him getting huge TikTok attention using only PowerPoint workflows. {R28}He’s basically 
+become a 
+SP 94 "C5_dong07" 889000,3359150,10922000,304800 N1 D9 B2 ¶[P1]{R28}meme/legend{R26} in the Vietnamese 
+editing community for: 
+SP 95 "C5_dong08" 1778000,3679825,10922000,304800 N1 D9 B2 ¶[P1]{R26}“doing impossible things in 
+PowerPoint.” 
+SP 96 "C5_dong09" 889000,4000500,10922000,304800 N1 D9 B2 ¶[P1]{R26}That’s why people jokingly call 
+him: 
+SP 97 "C5_dong10" 1778000,4321175,10922000,304800 N1 D9 B2 ¶[P1]{R27}“the best PowerPoint editor.” 
+SP 98 "C5_dong11" 889000,4641850,10922000,304800 N1 D9 B2 ¶[P1]{R26}If you want to edit like him, the 
+main things to learn are: 
+SP 99 "C5_dong12" 1365250,4962525,10922000,304800 N1 D9 B2 ¶[P1]{R29}• Morph transitions 
+SP 100 "C5_dong13" 1365250,5283200,10922000,304800 N1 D9 B2 ¶[P1]{R29}• Animation Pane timing 
+SP 101 "C5_dong14" 1365250,5603875,10922000,304800 N1 D9 B2 ¶[P1]{R29}• PNG layering 
+SP 102 "C5_dong15" 1365250,5924550,10922000,304800 N1 D9 B2 ¶[P1]{R29}• Beat sync 
+SP 103 "C5_dong16" 1365250,6245225,10922000,304800 N1 D9 B2 ¶[P1]{R29}• Motion path animations 
+SP 104 "C5_nut" 635000,6527800,3810000,279400 N1 D9 B2 ¶[P1]{R30}⧉             ⤴   ⟳   ⋯     
+Source 
+PIC 105 "C6_logo" 8382000,2286000,1524000,1524000 N2 D29 img=image4.png 
+SP 106 "C6_dong1" 10477500,2508250,13970000,1079500 N1 D9 B2 ¶[P1]{R31}Yes — I know about “[Tên của 
+bạn]” 
+SP 107 "C6_dong2" 10477500,4413250,13970000,1079500 N1 D9 B2 ¶[P1]{R31}He became popular because 
+people… 
+SP 108 "C7_nen" 0,0,12192000,6858000 N1 D30 B1 ¶{R1|end} 
+SP 109 "C7_app1" 2343150,-901700,1930400,1930400 N1 D31 B1 ¶{R1|end} 
+SP 110 "C7_nhan1" 1974850,958850,2667000,444500 N1 D9 B2 ¶[P3]{R18}My 
+SP 111 "C7_app2" 5130800,-901700,1930400,1930400 N1 D32 B1 ¶{R1|end} 
+SP 112 "C7_nhan2" 4762500,958850,2667000,444500 N1 D9 B2 ¶[P3]{R18}Name 
+SP 113 "C7_app3" 7905750,-901700,1930400,1930400 N1 D33 B1 ¶{R1|end} 
+SP 114 "C7_nhan3" 7537450,958850,2667000,444500 N1 D9 B2 ¶[P3]{R18}Is 
+=== PAGE 10 ===
+ 
+ 
+SP 115 "C7_app4" 2343150,2057400,1930400,1930400 N1 D33 B1 ¶{R1|end} 
+SP 116 "C7_nhan4" 1974850,4165600,2667000,444500 N1 D9 B2 ¶[P3]{R18}[Tên] 
+SP 117 "C7_app5" 5130800,2057400,1930400,1930400 N1 D33 B1 ¶{R1|end} 
+SP 118 "C7_nhan5" 4762500,4165600,2667000,444500 N1 D9 B2 ¶[P3]{R18}ChatGPT 
+SP 119 "C7_app6" 7905750,2057400,1930400,1930400 N1 D33 B1 ¶{R1|end} 
+SP 120 "C7_nhan6" 7537450,4165600,2667000,444500 N1 D9 B2 ¶[P3]{R18}[Họ] 
+SP 121 "C7_app7" 2343150,5295900,1930400,1930400 N1 D34 B1 ¶{R1|end} 
+SP 122 "C7_app8" 5130800,5295900,1930400,1930400 N1 D35 B1 ¶{R1|end} 
+SP 123 "C7_app9" 7905750,5295900,1930400,1930400 N1 D36 B1 ¶{R1|end} 
+SP 124 "C7_note_vang" 7905750,2057400,1930400,469900 N1 D37 B1 ¶{R1|end} 
+SP 125 "C7_rem0" 2876550,2432050,215900,215900 N1 D38 B1 ¶{R1|end} 
+SP 126 "C7_remdong0" 3206750,2527300,952500,25400 N1 D39 B1 ¶{R1|end} 
+SP 127 "C7_rem1" 2876550,2908300,215900,215900 N1 D40 B1 ¶{R1|end} 
+SP 128 "C7_remdong1" 3206750,3003550,952500,25400 N1 D39 B1 ¶{R1|end} 
+SP 129 "C7_rem2" 2876550,3384550,215900,215900 N1 D41 B1 ¶{R1|end} 
+SP 130 "C7_remdong2" 3206750,3479800,952500,25400 N1 D39 B1 ¶{R1|end} 
+PIC 131 "C7_logo" 5492750,2419350,1206500,1206500 N2 D7 img=image2.png 
+SP 132 "C7_badge" 6851650,1962150,368300,368300 N1 D42 B3 ¶[P3]{R17}20 
+SP 133 "C7_icon_trang" 5130800,2057400,1930400,1930400 N1 D33 B1 ¶{R1|end} 
+PIC 134 "C7_logo_nho" 5524500,3238500,381000,381000 N2 D7 img=image2.png 
+SP 135 "C7_pill" 5480050,2378075,1333500,476250 N1 D43 B1 ¶{R1|end} 
+SP 136 "C8_nen" 0,0,12192000,6858000 N1 D44 B1 ¶{R1|end} 
+GROUP 139 "C8_nut1" 3835400,2806700,4521200,1244600/3835400,2806700,4521200,1244600 N3 G1 
+  SP 137 "c136" 3835400,2806700,4521200,1244600 N1 D45 B1 ¶{R1|end} 
+  SP 138 "c137" 3924300,2933700,4343400,990600 N1 D46 B1 ¶{R1|end} 
+END 
+SP 140 "C8_contro" 4318000,3143250,127000,571500 N1 D9 B2 ¶[P3]{R32}| 
+SP 141 "C8_chu1_xanh" 3937000,2952750,4318000,952500 N1 D9 B3 ¶[P3]{R33}GENERATE 
+SP 142 "C8_chu1_den" 3937000,2952750,4318000,952500 N1 D9 B3 ¶[P3]{R34}GENERATE 
+GROUP 146 "C8_ic_tranh" 2476500,3048000,762000,762000/2476500,3048000,762000,762000 N3 G1 
+  SP 143 "c142" 2603500,3206750,508000,444500 N1 D47 B1 ¶{R1|end} 
+  SP 144 "c143" 2660650,3263900,393700,330200 N1 D48 B1 ¶{R1|end} 
+  SP 145 "c144" 2711450,3397250,317500,190500 N1 D49 B1 ¶{R1|end} 
+END 
+GROUP 150 "C8_ic_manhghep" 8572500,4381500,762000,762000/8572500,4381500,762000,762000 N3 G1 
+  SP 147 "c146" 8750300,4559300,406400,406400 N1 D50 B1 ¶{R1|end} 
+  SP 148 "c147" 9086850,4679950,165100,165100 N1 D51 B1 ¶{R1|end} 
+  SP 149 "c148" 8870950,4464050,165100,165100 N1 D51 B1 ¶{R1|end} 
+END 
+GROUP 153 "C8_nut2" 4121150,2692400,4521200,1244600/4121150,2692400,4521200,1244600;rot=-1680000 N3 G1 
+  SP 151 "c150" 4121150,2692400,4521200,1244600 N1 D45 B1 ¶{R1|end} 
+  SP 152 "c151" 4210050,2819400,4343400,990600 N1 D46 B1 ¶{R1|end} 
+END 
+SP 154 "C8_chu2_xanh" 4222750,2838450,4318000,952500;rot=-480000 N1 D9 B3 ¶[P3]{R33}THINK 
+SP 155 "C8_chu2_den" 4222750,2838450,4318000,952500;rot=360000 N1 D9 B3 ¶[P3]{R34}THINK 
+GROUP 158 "C8_ic_bongden" 2552700,1600200,762000,762000/2552700,1600200,762000,762000 N3 G1 
+  SP 156 "c155" 2736850,1733550,393700,393700 N1 D52 B1 ¶{R1|end} 
+  SP 157 "c156" 2838450,2101850,190500,139700 N1 D53 B1 ¶{R1|end} 
+END 
+GROUP 160 "C8_ic_nao" 9258300,3924300,762000,762000/9258300,3924300,762000,762000 N3 G1 
+  SP 159 "c158" 9366250,4083050,546100,444500 N1 D54 B1 ¶{R1|end} 
+END 
+GROUP 163 "C8_nut3" 3740150,1854200,4521200,1244600/3740150,1854200,4521200,1244600;rot=-1500000 N3 G1 
+  SP 161 "c160" 3740150,1854200,4521200,1244600 N1 D45 B1 ¶{R1|end} 
+  SP 162 "c161" 3829050,1981200,4343400,990600 N1 D46 B1 ¶{R1|end} 
+END 
+SP 164 "C8_chu3_xanh" 3841750,2000250,4318000,952500;rot=-300000 N1 D9 B3 ¶[P3]{R33}WRITE 
+SP 165 "C8_chu3_den" 3854450,2317750,4318000,952500;rot=-300000 N1 D9 B3 ¶[P3]{R34}WRITE 
+GROUP 171 "C8_ic_giay" 2019300,1790700,762000,762000/2019300,1790700,762000,762000 N3 G1 
+  SP 166 "c165" 2197100,1911350,406400,520700 N1 D55 B1 ¶{R1|end} 
+  SP 167 "c166" 2266950,2032000,241300,25400 N1 D56 B1 ¶{R1|end} 
+  SP 168 "c167" 2266950,2108200,241300,25400 N1 D56 B1 ¶{R1|end} 
+  SP 169 "c168" 2266950,2184400,241300,25400 N1 D56 B1 ¶{R1|end} 
+  SP 170 "c169" 2266950,2260600,241300,25400 N1 D56 B1 ¶{R1|end} 
+=== PAGE 11 ===
+ 
+ 
+END 
+GROUP 174 "C8_ic_but" 9601200,2781300,762000,762000/9601200,2781300,762000,762000 N3 G1 
+  SP 172 "c171" 9759950,3048000,444500,355600 N1 D57 B1 ¶{R1|end} 
+  SP 173 "c172" 9734550,2997200,571500,101600;rot=-2100000 N1 D58 B1 ¶{R1|end} 
+END 
+SP 175 "C9_nen" 0,0,12192000,6858000 N1 D1 B1 ¶{R1|end} 
+PIC 176 "C9_logo" 5175250,2508250,1841500,1841500 N2 D7 img=image2.png 
+SP 177 "C9_ten_xam" 4635500,2667000,6350000,1524000 N1 D9 B2 ¶[P1]{R35}ChatGPT 
+SP 178 "C9_ten_den" 4635500,2667000,6350000,1524000 N1 D9 B2 ¶[P1]{R36}ChatGPT 
+SP 179 "C9_ket" 12166600,6832600,25400,25400 N1 D59 B1 ¶{R1|end} 
+ 
+# --- ANIMATION --- 
+TSKEL <p:timing><p:tnLst><p:par><p:cTn dur="indefinite" restart="never" 
+nodeType="tmRoot"><p:childTnLst><p:seq concurrent="1" nextAc="seek"><p:cTn dur="indefinite" 
+nodeType="mainSeq"><p:childTnLst><p:par><p:cTn fill="hold"><p:stCondLst><p:cond 
+delay="indefinite"/><p:cond evt="onBegin" delay="0"><p:tn 
+val="2"/></p:cond></p:stCondLst><p:childTnLst><p:par><p:cTn fill="hold"><p:stCondLst><p:cond 
+delay="0"/></p:stCondLst><p:childTnLst>§E</p:childTnLst></p:cTn></p:par></p:childTnLst></p:cTn></p:par
+></p:childTnLst></p:cTn><p:prevCondLst><p:cond evt="onPrev" 
+delay="0"><p:tgtEl><p:sldTgt/></p:tgtEl></p:cond></p:prevCondLst><p:nextCondLst><p:cond evt="onNext" 
+delay="0"><p:tgtEl><p:sldTgt/></p:tgtEl></p:cond></p:nextCondLst></p:seq></p:childTnLst></p:cTn></p:pa
+r></p:tnLst>§BLD</p:timing> 
+ 
+# Mẫu hiệu ứng (A#): §k = tham số thứ k của dòng E 
+A1 = <p:par><p:cTn presetID="6" presetClass="emph" presetSubtype="0" decel="50000" fill="hold" 
+nodeType="withEffect"><p:stCondLst><p:cond 
+delay="§1"/></p:stCondLst><p:childTnLst><p:animScale><p:cBhvr><p:cTn dur="§2" 
+fill="hold"/><p:tgtEl><p:spTgt spid="§3"/></p:tgtEl></p:cBhvr><p:by x="§4" 
+y="§5"/></p:animScale></p:childTnLst></p:cTn></p:par> 
+A2 = <p:par><p:cTn presetID="2" presetClass="entr" presetSubtype="§1" decel="100000" fill="hold" 
+nodeType="withEffect"><p:stCondLst><p:cond 
+delay="§2"/></p:stCondLst><p:childTnLst><p:set><p:cBhvr><p:cTn dur="1" 
+fill="hold"><p:stCondLst><p:cond delay="0"/></p:stCondLst></p:cTn><p:tgtEl><p:spTgt 
+spid="§3"/></p:tgtEl><p:attrNameLst><p:attrName>style.visibility</p:attrName></p:attrNameLst></p:cBhvr
+><p:to><p:strVal val="visible"/></p:to></p:set><p:anim calcmode="lin" valueType="num"><p:cBhvr 
+additive="base"><p:cTn dur="§4" fill="hold"/><p:tgtEl><p:spTgt 
+spid="§3"/></p:tgtEl><p:attrNameLst><p:attrName>ppt_x</p:attrName></p:attrNameLst></p:cBhvr><p:tavLst>
+<p:tav tm="0"><p:val><p:strVal val="§5"/></p:val></p:tav><p:tav tm="100000"><p:val><p:strVal 
+val="#ppt_x"/></p:val></p:tav></p:tavLst></p:anim><p:anim calcmode="lin" valueType="num"><p:cBhvr 
+additive="base"><p:cTn dur="§4" fill="hold"/><p:tgtEl><p:spTgt 
+spid="§3"/></p:tgtEl><p:attrNameLst><p:attrName>ppt_y</p:attrName></p:attrNameLst></p:cBhvr><p:tavLst>
+<p:tav tm="0"><p:val><p:strVal val="§6"/></p:val></p:tav><p:tav tm="100000"><p:val><p:strVal 
+val="#ppt_y"/></p:val></p:tav></p:tavLst></p:anim></p:childTnLst></p:cTn></p:par> 
+A3 = <p:par><p:cTn presetID="10" presetClass="exit" presetSubtype="0" fill="hold" 
+nodeType="withEffect"><p:stCondLst><p:cond delay="§1"/></p:stCondLst><p:childTnLst><p:animEffect 
+transition="out" filter="fade"><p:cBhvr><p:cTn dur="§2"/><p:tgtEl><p:spTgt 
+spid="§3"/></p:tgtEl></p:cBhvr></p:animEffect><p:set><p:cBhvr><p:cTn dur="1" 
+fill="hold"><p:stCondLst><p:cond delay="§4"/></p:stCondLst></p:cTn><p:tgtEl><p:spTgt 
+spid="§3"/></p:tgtEl><p:attrNameLst><p:attrName>style.visibility</p:attrName></p:attrNameLst></p:cBhvr
+><p:to><p:strVal val="hidden"/></p:to></p:set></p:childTnLst></p:cTn></p:par> 
+A4 = <p:par><p:cTn presetID="53" presetClass="entr" presetSubtype="16" decel="50000" fill="hold" 
+nodeType="withEffect"><p:stCondLst><p:cond 
+delay="§1"/></p:stCondLst><p:childTnLst><p:set><p:cBhvr><p:cTn dur="1" 
+fill="hold"><p:stCondLst><p:cond delay="0"/></p:stCondLst></p:cTn><p:tgtEl><p:spTgt 
+spid="§2"/></p:tgtEl><p:attrNameLst><p:attrName>style.visibility</p:attrName></p:attrNameLst></p:cBhvr
+><p:to><p:strVal val="visible"/></p:to></p:set><p:anim calcmode="lin" valueType="num"><p:cBhvr 
+additive="base"><p:cTn dur="§3" fill="hold"/><p:tgtEl><p:spTgt 
+spid="§2"/></p:tgtEl><p:attrNameLst><p:attrName>ppt_w</p:attrName></p:attrNameLst></p:cBhvr><p:tavLst>
+<p:tav tm="0"><p:val><p:fltVal val="0"/></p:val></p:tav><p:tav tm="100000"><p:val><p:strVal 
+val="#ppt_w"/></p:val></p:tav></p:tavLst></p:anim><p:anim calcmode="lin" valueType="num"><p:cBhvr 
+additive="base"><p:cTn dur="§3" fill="hold"/><p:tgtEl><p:spTgt 
+spid="§2"/></p:tgtEl><p:attrNameLst><p:attrName>ppt_h</p:attrName></p:attrNameLst></p:cBhvr><p:tavLst>
+<p:tav tm="0"><p:val><p:fltVal val="0"/></p:val></p:tav><p:tav tm="100000"><p:val><p:strVal 
+val="#ppt_h"/></p:val></p:tav></p:tavLst></p:anim><p:animEffect transition="in" 
+=== PAGE 12 ===
+ 
+ 
+filter="fade"><p:cBhvr><p:cTn dur="§3"/><p:tgtEl><p:spTgt 
+spid="§2"/></p:tgtEl></p:cBhvr></p:animEffect></p:childTnLst></p:cTn></p:par> 
+A5 = <p:par><p:cTn presetID="§1" presetClass="entr" presetSubtype="§2" fill="hold" 
+nodeType="withEffect"><p:stCondLst><p:cond 
+delay="§3"/></p:stCondLst><p:childTnLst><p:set><p:cBhvr><p:cTn dur="1" 
+fill="hold"><p:stCondLst><p:cond delay="0"/></p:stCondLst></p:cTn><p:tgtEl><p:spTgt 
+spid="§4"/></p:tgtEl><p:attrNameLst><p:attrName>style.visibility</p:attrName></p:attrNameLst></p:cBhvr
+><p:to><p:strVal val="visible"/></p:to></p:set><p:animEffect transition="in" 
+filter="§5"><p:cBhvr><p:cTn dur="§6"/><p:tgtEl><p:spTgt 
+spid="§4"/></p:tgtEl></p:cBhvr></p:animEffect></p:childTnLst></p:cTn></p:par> 
+A6 = <p:par><p:cTn presetID="1" presetClass="§1" presetSubtype="0" fill="hold" 
+nodeType="withEffect"><p:stCondLst><p:cond 
+delay="§2"/></p:stCondLst><p:childTnLst><p:set><p:cBhvr><p:cTn dur="1" 
+fill="hold"><p:stCondLst><p:cond delay="0"/></p:stCondLst></p:cTn><p:tgtEl><p:spTgt 
+spid="§3"/></p:tgtEl><p:attrNameLst><p:attrName>style.visibility</p:attrName></p:attrNameLst></p:cBhvr
+><p:to><p:strVal val="§4"/></p:to></p:set></p:childTnLst></p:cTn></p:par> 
+A7 = <p:par><p:cTn presetID="0" presetClass="path" presetSubtype="0" accel="50000" decel="50000" 
+fill="hold" nodeType="withEffect"><p:stCondLst><p:cond 
+delay="§1"/></p:stCondLst><p:childTnLst><p:animMotion origin="layout" path="§2" 
+pathEditMode="relative" rAng="0" ptsTypes="AA"><p:cBhvr><p:cTn dur="§3" fill="hold"/><p:tgtEl><p:spTgt 
+spid="§4"/></p:tgtEl><p:attrNameLst><p:attrName>ppt_x</p:attrName><p:attrName>ppt_y</p:attrName></p:at
+trNameLst></p:cBhvr><p:rCtr x="0" y="0"/></p:animMotion></p:childTnLst></p:cTn></p:par> 
+A8 = <p:par><p:cTn presetID="§1" presetClass="entr" presetSubtype="§2" fill="hold" grpId="0" 
+nodeType="withEffect"><p:stCondLst><p:cond 
+delay="§3"/></p:stCondLst><p:childTnLst><p:set><p:cBhvr><p:cTn dur="1" 
+fill="hold"><p:stCondLst><p:cond delay="0"/></p:stCondLst></p:cTn><p:tgtEl><p:spTgt 
+spid="§4"/></p:tgtEl><p:attrNameLst><p:attrName>style.visibility</p:attrName></p:attrNameLst></p:cBhvr
+><p:to><p:strVal val="visible"/></p:to></p:set><p:animEffect transition="in" 
+filter="§5"><p:cBhvr><p:cTn dur="§6"/><p:tgtEl><p:spTgt 
+spid="§4"/></p:tgtEl></p:cBhvr></p:animEffect></p:childTnLst></p:cTn></p:par> 
+A9 = <p:par><p:cTn presetID="53" presetClass="entr" presetSubtype="16" decel="50000" fill="hold" 
+grpId="0" nodeType="withEffect"><p:stCondLst><p:cond 
+delay="§1"/></p:stCondLst><p:childTnLst><p:set><p:cBhvr><p:cTn dur="1" 
+fill="hold"><p:stCondLst><p:cond delay="0"/></p:stCondLst></p:cTn><p:tgtEl><p:spTgt 
+spid="§2"/></p:tgtEl><p:attrNameLst><p:attrName>style.visibility</p:attrName></p:attrNameLst></p:cBhvr
+><p:to><p:strVal val="visible"/></p:to></p:set><p:anim calcmode="lin" valueType="num"><p:cBhvr 
+additive="base"><p:cTn dur="§3" fill="hold"/><p:tgtEl><p:spTgt 
+spid="§2"/></p:tgtEl><p:attrNameLst><p:attrName>ppt_w</p:attrName></p:attrNameLst></p:cBhvr><p:tavLst>
+<p:tav tm="0"><p:val><p:fltVal val="0"/></p:val></p:tav><p:tav tm="100000"><p:val><p:strVal 
+val="#ppt_w"/></p:val></p:tav></p:tavLst></p:anim><p:anim calcmode="lin" valueType="num"><p:cBhvr 
+additive="base"><p:cTn dur="§3" fill="hold"/><p:tgtEl><p:spTgt 
+spid="§2"/></p:tgtEl><p:attrNameLst><p:attrName>ppt_h</p:attrName></p:attrNameLst></p:cBhvr><p:tavLst>
+<p:tav tm="0"><p:val><p:fltVal val="0"/></p:val></p:tav><p:tav tm="100000"><p:val><p:strVal 
+val="#ppt_h"/></p:val></p:tav></p:tavLst></p:anim><p:animEffect transition="in" 
+filter="fade"><p:cBhvr><p:cTn dur="§3"/><p:tgtEl><p:spTgt 
+spid="§2"/></p:tgtEl></p:cBhvr></p:animEffect></p:childTnLst></p:cTn></p:par> 
+A10 = <p:par><p:cTn presetID="2" presetClass="entr" presetSubtype="4" decel="100000" fill="hold" 
+grpId="0" nodeType="withEffect"><p:stCondLst><p:cond 
+delay="2500"/></p:stCondLst><p:childTnLst><p:set><p:cBhvr><p:cTn dur="1" 
+fill="hold"><p:stCondLst><p:cond delay="0"/></p:stCondLst></p:cTn><p:tgtEl><p:spTgt 
+spid="23"/></p:tgtEl><p:attrNameLst><p:attrName>style.visibility</p:attrName></p:attrNameLst></p:cBhvr
+><p:to><p:strVal val="visible"/></p:to></p:set><p:anim calcmode="lin" valueType="num"><p:cBhvr 
+additive="base"><p:cTn dur="300" fill="hold"/><p:tgtEl><p:spTgt 
+spid="23"/></p:tgtEl><p:attrNameLst><p:attrName>ppt_x</p:attrName></p:attrNameLst></p:cBhvr><p:tavLst>
+<p:tav tm="0"><p:val><p:strVal val="#ppt_x"/></p:val></p:tav><p:tav tm="100000"><p:val><p:strVal 
+val="#ppt_x"/></p:val></p:tav></p:tavLst></p:anim><p:anim calcmode="lin" valueType="num"><p:cBhvr 
+additive="base"><p:cTn dur="300" fill="hold"/><p:tgtEl><p:spTgt 
+spid="23"/></p:tgtEl><p:attrNameLst><p:attrName>ppt_y</p:attrName></p:attrNameLst></p:cBhvr><p:tavLst>
+<p:tav tm="0"><p:val><p:strVal val="1+#ppt_h/2"/></p:val></p:tav><p:tav tm="100000"><p:val><p:strVal 
+val="#ppt_y"/></p:val></p:tav></p:tavLst></p:anim></p:childTnLst></p:cTn></p:par> 
+A11 = <p:par><p:cTn presetID="0" presetClass="path" presetSubtype="0" accel="50000" decel="50000" 
+fill="hold" grpId="§1" nodeType="withEffect"><p:stCondLst><p:cond 
+delay="§2"/></p:stCondLst><p:childTnLst><p:animMotion origin="layout" path="§3" 
+pathEditMode="relative" rAng="0" ptsTypes="AA"><p:cBhvr><p:cTn dur="§4" fill="hold"/><p:tgtEl><p:spTgt 
+=== PAGE 13 ===
+ 
+ 
+spid="§5"/></p:tgtEl><p:attrNameLst><p:attrName>ppt_x</p:attrName><p:attrName>ppt_y</p:attrName></p:at
+trNameLst></p:cBhvr><p:rCtr x="0" y="0"/></p:animMotion></p:childTnLst></p:cTn></p:par> 
+A12 = <p:par><p:cTn presetID="6" presetClass="emph" presetSubtype="0" decel="50000" fill="hold" 
+grpId="§1" nodeType="withEffect"><p:stCondLst><p:cond 
+delay="§2"/></p:stCondLst><p:childTnLst><p:animScale><p:cBhvr><p:cTn dur="§3" 
+fill="hold"/><p:tgtEl><p:spTgt spid="§4"/></p:tgtEl></p:cBhvr><p:by x="§5" 
+y="§6"/></p:animScale></p:childTnLst></p:cTn></p:par> 
+A13 = <p:par><p:cTn presetID="8" presetClass="emph" presetSubtype="0" decel="50000" fill="hold" 
+grpId="7" nodeType="withEffect"><p:stCondLst><p:cond 
+delay="5450"/></p:stCondLst><p:childTnLst><p:animRot by="180000"><p:cBhvr><p:cTn dur="200" 
+fill="hold"/><p:tgtEl><p:spTgt 
+spid="16"/></p:tgtEl><p:attrNameLst><p:attrName>r</p:attrName></p:attrNameLst></p:cBhvr></p:animRot></
+p:childTnLst></p:cTn></p:par> 
+A14 = <p:par><p:cTn presetID="10" presetClass="exit" presetSubtype="0" fill="hold" grpId="§1" 
+nodeType="withEffect"><p:stCondLst><p:cond delay="§2"/></p:stCondLst><p:childTnLst><p:animEffect 
+transition="out" filter="fade"><p:cBhvr><p:cTn dur="§3"/><p:tgtEl><p:spTgt 
+spid="§4"/></p:tgtEl></p:cBhvr></p:animEffect><p:set><p:cBhvr><p:cTn dur="1" 
+fill="hold"><p:stCondLst><p:cond delay="§5"/></p:stCondLst></p:cTn><p:tgtEl><p:spTgt 
+spid="§4"/></p:tgtEl><p:attrNameLst><p:attrName>style.visibility</p:attrName></p:attrNameLst></p:cBhvr
+><p:to><p:strVal val="hidden"/></p:to></p:set></p:childTnLst></p:cTn></p:par> 
+A15 = <p:par><p:cTn presetID="1" presetClass="§1" presetSubtype="0" fill="hold" grpId="§2" 
+nodeType="withEffect"><p:stCondLst><p:cond 
+delay="§3"/></p:stCondLst><p:childTnLst><p:set><p:cBhvr><p:cTn dur="1" 
+fill="hold"><p:stCondLst><p:cond delay="0"/></p:stCondLst></p:cTn><p:tgtEl><p:spTgt 
+spid="§4"/></p:tgtEl><p:attrNameLst><p:attrName>style.visibility</p:attrName></p:attrNameLst></p:cBhvr
+><p:to><p:strVal val="§5"/></p:to></p:set></p:childTnLst></p:cTn></p:par> 
+A16 = <p:par><p:cTn presetID="8" presetClass="emph" presetSubtype="0" decel="50000" fill="hold" 
+nodeType="withEffect"><p:stCondLst><p:cond delay="§1"/></p:stCondLst><p:childTnLst><p:animRot 
+by="§2"><p:cBhvr><p:cTn dur="§3" fill="hold"/><p:tgtEl><p:spTgt 
+spid="§4"/></p:tgtEl><p:attrNameLst><p:attrName>r</p:attrName></p:attrNameLst></p:cBhvr></p:animRot></
+p:childTnLst></p:cTn></p:par> 
+A17 = <p:par><p:cTn presetID="10" presetClass="entr" presetSubtype="0" fill="hold" grpId="0" 
+nodeType="withEffect"><p:stCondLst><p:cond delay="§1"/></p:stCondLst><p:iterate type="lt"><p:tmPct 
+val="§2"/></p:iterate><p:childTnLst><p:set><p:cBhvr><p:cTn dur="1" fill="hold"><p:stCondLst><p:cond 
+delay="0"/></p:stCondLst></p:cTn><p:tgtEl><p:spTgt 
+spid="§3"/></p:tgtEl><p:attrNameLst><p:attrName>style.visibility</p:attrName></p:attrNameLst></p:cBhvr
+><p:to><p:strVal val="visible"/></p:to></p:set><p:animEffect transition="in" 
+filter="fade"><p:cBhvr><p:cTn dur="100"/><p:tgtEl><p:spTgt 
+spid="§3"/></p:tgtEl></p:cBhvr></p:animEffect></p:childTnLst></p:cTn></p:par> 
+A18 = <p:par><p:cTn presetID="0" presetClass="path" presetSubtype="0" fill="hold" 
+nodeType="withEffect"><p:stCondLst><p:cond delay="13750"/></p:stCondLst><p:childTnLst><p:animMotion 
+origin="layout" path="M 0 0 L -0.171875 0.388889 L -0.546875 -0.055556 L -0.697917 0.025926 E" 
+pathEditMode="relative" rAng="0" ptsTypes="AAAA"><p:cBhvr><p:cTn dur="1000" 
+fill="hold"/><p:tgtEl><p:spTgt 
+spid="86"/></p:tgtEl><p:attrNameLst><p:attrName>ppt_x</p:attrName><p:attrName>ppt_y</p:attrName></p:at
+trNameLst></p:cBhvr><p:rCtr x="0" y="0"/></p:animMotion></p:childTnLst></p:cTn></p:par> 
+A19 = <p:par><p:cTn presetID="53" presetClass="exit" presetSubtype="32" fill="hold" 
+nodeType="withEffect"><p:stCondLst><p:cond delay="§1"/></p:stCondLst><p:childTnLst><p:anim 
+calcmode="lin" valueType="num"><p:cBhvr additive="base"><p:cTn dur="§2" fill="hold"/><p:tgtEl><p:spTgt 
+spid="§3"/></p:tgtEl><p:attrNameLst><p:attrName>ppt_w</p:attrName></p:attrNameLst></p:cBhvr><p:tavLst>
+<p:tav tm="0"><p:val><p:strVal val="#ppt_w"/></p:val></p:tav><p:tav tm="100000"><p:val><p:fltVal 
+val="0"/></p:val></p:tav></p:tavLst></p:anim><p:anim calcmode="lin" valueType="num"><p:cBhvr 
+additive="base"><p:cTn dur="§2" fill="hold"/><p:tgtEl><p:spTgt 
+spid="§3"/></p:tgtEl><p:attrNameLst><p:attrName>ppt_h</p:attrName></p:attrNameLst></p:cBhvr><p:tavLst>
+<p:tav tm="0"><p:val><p:strVal val="#ppt_h"/></p:val></p:tav><p:tav tm="100000"><p:val><p:fltVal 
+val="0"/></p:val></p:tav></p:tavLst></p:anim><p:animEffect transition="out" 
+filter="fade"><p:cBhvr><p:cTn dur="§2"/><p:tgtEl><p:spTgt 
+spid="§3"/></p:tgtEl></p:cBhvr></p:animEffect><p:set><p:cBhvr><p:cTn dur="1" 
+fill="hold"><p:stCondLst><p:cond delay="§4"/></p:stCondLst></p:cTn><p:tgtEl><p:spTgt 
+spid="§3"/></p:tgtEl><p:attrNameLst><p:attrName>style.visibility</p:attrName></p:attrNameLst></p:cBhvr
+><p:to><p:strVal val="hidden"/></p:to></p:set></p:childTnLst></p:cTn></p:par> 
+ 
+# 349 hiệu ứng theo đúng thứ tự (E mẫu tham_số1|tham_số2|...) 
+E A1 0|420|5|17000|17000 
+=== PAGE 14 ===
+ 
+ 
+E A2 4|0|8|350|#ppt_x|1+#ppt_h/2 
+E A3 150|280|5|279 
+E A4 450|7|250 
+E A1 750|300|7|114999|114999 
+E A1 750|300|8|114999|114999 
+E A5 10|0|1150|3|fade|150 
+E A6 entr|1333|4|visible 
+E A6 entr|1333|6|visible 
+E A3 1500|200|6|199 
+E A7 1500|M 0 0 L -0.305208 -0.118519 E|350|7 
+E A1 1500|350|7|145652|145652 
+E A7 1500|M 0 0 L -0.305208 -0.118519 E|350|8 
+E A1 1500|350|8|143812|143812 
+E A8 10|0|1750|11|fade|200 
+E A8 10|0|1750|12|fade|200 
+E A8 10|0|1750|13|fade|200 
+E A9 1750|16|250 
+E A6 exit|1850|7|hidden 
+E A6 entr|1850|9|visible 
+E A6 exit|1850|8|hidden 
+E A6 entr|1850|10|visible 
+E A8 22|8|2000|14|wipe(left)|250 
+E A5 22|8|2000|18|wipe(left)|300 
+E A8 10|0|2000|19|fade|250 
+E A8 22|8|2050|15|wipe(left)|250 
+E A8 10|0|2100|20|fade|250 
+E A5 22|8|2150|22|wipe(left)|300 
+E A8 10|0|2200|21|fade|250 
+E A5 10|0|2250|17|fade|200 
+E A10  
+E A2 2|2500|31|300|1+#ppt_w/2|#ppt_y 
+E A8 10|0|2550|24|fade|250 
+E A8 10|0|2550|25|fade|250 
+E A2 2|2750|37|300|1+#ppt_w/2|#ppt_y 
+E A2 2|3000|43|300|1+#ppt_w/2|#ppt_y 
+E A2 2|3250|49|300|1+#ppt_w/2|#ppt_y 
+E A7 3750|M 0 0 L -0.087500 0.190741 E|400|9 
+E A1 3750|400|9|140000|140000 
+E A7 3750|M 0 0 L -0.087500 0.190741 E|400|10 
+E A1 3750|400|10|140000|140000 
+E A11 1|3750|M 0 0 L -0.110833 0.066667 E|400|11 
+E A12 2|3750|400|11|140000|140000 
+E A11 1|3750|M 0 0 L 0.065833 0.066667 E|400|12 
+E A12 2|3750|400|12|140000|140000 
+E A11 1|3750|M 0 0 L -0.102917 0.110000 E|400|13 
+E A12 2|3750|400|13|140000|140000 
+E A11 1|3750|M 0 0 L 0.013750 0.148148 E|400|14 
+E A12 2|3750|400|14|140000|140000 
+E A11 1|3750|M 0 0 L 0.013750 0.168519 E|400|15 
+E A12 2|3750|400|15|140000|140000 
+E A11 1|3750|M 0 0 L -0.021042 0.233333 E|400|16 
+E A12 2|3750|400|16|140000|140000 
+E A7 3750|M 0 0 L 0.070208 0.238148 E|400|17 
+E A1 3750|400|17|140000|140000 
+E A7 3750|M 0 0 L -0.017500 0.276296 E|400|18 
+E A1 3750|400|18|140000|140000 
+E A11 1|3750|M 0 0 L -0.097083 0.319630 E|400|19 
+E A12 2|3750|400|19|140000|140000 
+E A11 1|3750|M 0 0 L -0.033333 0.319630 E|400|20 
+E A12 2|3750|400|20|140000|140000 
+E A11 1|3750|M 0 0 L 0.026458 0.319630 E|400|21 
+E A12 2|3750|400|21|140000|140000 
+E A7 3750|M 0 0 L -0.017500 0.358889 E|400|22 
+E A1 3750|400|22|140000|140000 
+=== PAGE 15 ===
+ 
+ 
+E A11 1|3750|M 0 0 L -0.067500 0.384444 E|400|23 
+E A12 2|3750|400|23|140000|140000 
+E A11 1|3750|M 0 0 L -0.067500 0.412963 E|400|24 
+E A12 2|3750|400|24|140000|140000 
+E A11 1|3750|M 0 0 L 0.053333 0.412963 E|400|25 
+E A12 2|3750|400|25|140000|140000 
+E A7 3750|M 0 0 L 0.160000 0.100000 E|400|31 
+E A1 3750|400|31|140000|140000 
+E A7 3750|M 0 0 L 0.160000 0.191852 E|400|37 
+E A1 3750|400|37|140000|140000 
+E A7 3750|M 0 0 L 0.160000 0.284444 E|400|43 
+E A1 3750|400|43|140000|140000 
+E A7 3750|M 0 0 L 0.160000 0.377778 E|400|49 
+E A1 3750|400|49|140000|140000 
+E A5 10|0|4600|50|fade|150 
+E A5 10|0|4600|51|fade|150 
+E A3 4750|10|9|9 
+E A3 4750|10|10|9 
+E A5 10|0|4900|52|fade|120 
+E A3 4900|120|51|119 
+E A11 3|5000|M 0 0 L 0.007083 -0.045370 E|250|14 
+E A11 3|5000|M 0 0 L 0.007083 -0.045370 E|250|15 
+E A11 3|5000|M 0 0 L 0.108542 -0.015741 E|250|16 
+E A6 exit|5020|50|hidden 
+E A3 5150|200|52|199 
+E A12 4|5250|200|16|85000|85000 
+E A11 5|5450|M 0 0 L 0.004687 0.005556 E|200|16 
+E A12 6|5450|200|16|232520|117008 
+E A13  
+E A5 10|0|5530|53|fade|120 
+E A14 3|5600|400|11|399 
+E A14 3|5600|400|12|399 
+E A14 3|5600|400|13|399 
+E A3 5600|400|17|399 
+E A3 5600|400|18|399 
+E A14 3|5600|400|19|399 
+E A14 3|5600|400|20|399 
+E A14 3|5600|400|21|399 
+E A3 5600|400|22|399 
+E A14 3|5600|400|23|399 
+E A14 3|5600|400|24|399 
+E A14 3|5600|400|25|399 
+E A3 5600|400|31|399 
+E A3 5600|400|37|399 
+E A3 5600|400|43|399 
+E A3 5600|400|49|399 
+E A14 4|5650|300|14|299 
+E A14 4|5650|300|15|299 
+E A15 exit|8|5650|16|hidden 
+E A7 5650|M 0 0 L 0.000000 -0.002778 E|250|53 
+E A1 5650|250|53|168421|120000 
+E A16 5650|-180000|250|53 
+E A5 10|0|5700|54|fade|200 
+E A4 5850|55|200 
+E A6 exit|5900|53|hidden 
+E A6 entr|6100|56|visible 
+E A6 exit|6300|56|hidden 
+E A6 entr|6300|57|visible 
+E A6 exit|6500|57|hidden 
+E A4 6500|62|150 
+E A7 7000|M 0 0 L 0.000000 -0.016667 E|250|54 
+E A7 7000|M 0 0 L 0.000000 -0.016667 E|250|55 
+E A7 7000|M 0 0 L 0.000000 -0.016667 E|250|62 
+E A7 7250|M 0 0 L 0.000000 0.016667 E|250|54 
+=== PAGE 16 ===
+ 
+ 
+E A7 7250|M 0 0 L 0.000000 0.016667 E|250|55 
+E A7 7250|M 0 0 L 0.000000 0.016667 E|250|62 
+E A7 7750|M 0 0 L 0.003646 -0.208333 E|400|54 
+E A1 7750|400|54|67187|102272 
+E A7 7750|M 0 0 L 0.043750 -0.208333 E|400|55 
+E A7 7750|M 0 0 L 0.043750 -0.208333 E|400|62 
+E A5 10|0|7900|70|fade|250 
+E A6 exit|8150|54|hidden 
+E A8 10|0|8250|71|fade|200 
+E A8 10|0|8500|72|fade|250 
+E A8 10|0|8500|73|fade|250 
+E A5 10|0|8500|63|fade|200 
+E A8 10|0|8500|65|fade|200 
+E A8 10|0|8560|66|fade|200 
+E A8 10|0|8620|67|fade|200 
+E A8 10|0|8680|68|fade|200 
+E A8 10|0|8740|69|fade|200 
+E A8 10|0|9000|74|fade|200 
+E A5 10|0|9000|77|fade|250 
+E A8 10|0|9000|78|fade|250 
+E A8 10|0|9100|75|fade|200 
+E A5 10|0|9200|64|fade|200 
+E A8 10|0|9200|76|fade|200 
+E A17 9250|40000|79 
+E A15 exit|1|10750|72|hidden 
+E A17 10750|55000|80 
+E A6 exit|13000|62|hidden 
+E A4 13000|81|100 
+E A16 13000|21600000|250|81 
+E A6 exit|13250|81|hidden 
+E A15 entr|0|13250|82|visible 
+E A11 1|13500|M 0 0 L 0.330729 -0.373148 E|300|80 
+E A12 2|13500|300|80|90000|225000 
+E A8 10|0|13650|83|fade|150 
+E A3 13750|400|63|399 
+E A3 13750|400|64|399 
+E A14 1|13750|400|65|399 
+E A14 1|13750|400|66|399 
+E A14 1|13750|400|67|399 
+E A14 1|13750|400|68|399 
+E A14 1|13750|400|69|399 
+E A3 13750|400|70|399 
+E A14 1|13750|400|71|399 
+E A14 2|13750|400|72|399 
+E A14 1|13750|400|73|399 
+E A14 1|13750|400|74|399 
+E A14 1|13750|400|75|399 
+E A14 1|13750|400|76|399 
+E A3 13750|400|77|399 
+E A14 1|13750|400|78|399 
+E A14 1|13750|400|79|399 
+E A3 13750|400|55|399 
+E A14 1|13750|400|82|399 
+E A5 10|0|13750|86|fade|150 
+E A18  
+E A15 exit|3|13800|80|hidden 
+E A1 14750|250|86|160000|160000 
+E A3 14750|300|86|299 
+E A4 14750|87|250 
+E A8 22|8|14750|88|wipe(left)|450 
+E A8 22|8|14785|89|wipe(left)|450 
+E A8 22|8|14820|90|wipe(left)|450 
+E A8 22|8|14855|91|wipe(left)|450 
+E A8 22|8|14890|92|wipe(left)|450 
+=== PAGE 17 ===
+ 
+ 
+E A8 22|8|14925|93|wipe(left)|450 
+E A8 22|8|14960|94|wipe(left)|450 
+E A8 22|8|14995|95|wipe(left)|450 
+E A8 22|8|15030|96|wipe(left)|450 
+E A8 22|8|15065|97|wipe(left)|450 
+E A8 22|8|15100|98|wipe(left)|450 
+E A8 22|8|15135|99|wipe(left)|450 
+E A8 22|8|15170|100|wipe(left)|450 
+E A8 22|8|15205|101|wipe(left)|450 
+E A8 22|8|15240|102|wipe(left)|450 
+E A8 22|8|15275|103|wipe(left)|450 
+E A8 10|0|15750|104|fade|250 
+E A15 exit|1|17000|83|hidden 
+E A6 exit|17000|87|hidden 
+E A15 exit|1|17000|104|hidden 
+E A15 exit|1|17000|88|hidden 
+E A15 exit|1|17000|89|hidden 
+E A15 exit|1|17000|90|hidden 
+E A15 exit|1|17000|91|hidden 
+E A15 exit|1|17000|92|hidden 
+E A15 exit|1|17000|93|hidden 
+E A15 exit|1|17000|94|hidden 
+E A15 exit|1|17000|95|hidden 
+E A15 exit|1|17000|96|hidden 
+E A15 exit|1|17000|97|hidden 
+E A15 exit|1|17000|98|hidden 
+E A15 exit|1|17000|99|hidden 
+E A15 exit|1|17000|100|hidden 
+E A15 exit|1|17000|101|hidden 
+E A15 exit|1|17000|102|hidden 
+E A15 exit|1|17000|103|hidden 
+E A5 10|0|17200|105|fade|150 
+E A8 10|0|17200|106|fade|150 
+E A8 10|0|17200|107|fade|150 
+E A7 17250|M 0 0 L -0.250000 0.000000 E|600|105 
+E A11 1|17250|M 0 0 L -0.250000 0.000000 E|600|106 
+E A11 1|17250|M 0 0 L -0.250000 0.000000 E|600|107 
+E A14 2|18450|200|106|199 
+E A14 2|18450|200|107|199 
+E A5 10|0|18450|108|fade|250 
+E A5 10|0|18450|109|fade|250 
+E A8 10|0|18450|110|fade|250 
+E A5 10|0|18450|111|fade|250 
+E A8 10|0|18450|112|fade|250 
+E A5 10|0|18450|113|fade|250 
+E A8 10|0|18450|114|fade|250 
+E A5 10|0|18450|115|fade|250 
+E A8 10|0|18450|116|fade|250 
+E A5 10|0|18450|117|fade|250 
+E A8 10|0|18450|118|fade|250 
+E A5 10|0|18450|119|fade|250 
+E A8 10|0|18450|120|fade|250 
+E A5 10|0|18450|121|fade|250 
+E A5 10|0|18450|122|fade|250 
+E A5 10|0|18450|123|fade|250 
+E A5 10|0|18450|124|fade|250 
+E A5 10|0|18450|125|fade|250 
+E A5 10|0|18450|126|fade|250 
+E A5 10|0|18450|127|fade|250 
+E A5 10|0|18450|128|fade|250 
+E A5 10|0|18450|129|fade|250 
+E A5 10|0|18450|130|fade|250 
+E A5 10|0|18450|131|fade|250 
+E A3 18500|200|105|199 
+=== PAGE 18 ===
+ 
+ 
+E A9 18750|132|200 
+E A5 10|0|19000|133|fade|120 
+E A6 entr|19000|134|visible 
+E A15 exit|1|19000|132|hidden 
+E A4 19150|135|150 
+E A3 19300|250|108|249 
+E A3 19300|250|109|249 
+E A14 1|19300|250|110|249 
+E A3 19300|250|111|249 
+E A14 1|19300|250|112|249 
+E A3 19300|250|113|249 
+E A14 1|19300|250|114|249 
+E A3 19300|250|115|249 
+E A14 1|19300|250|116|249 
+E A3 19300|250|117|249 
+E A14 1|19300|250|118|249 
+E A3 19300|250|119|249 
+E A14 1|19300|250|120|249 
+E A3 19300|250|121|249 
+E A3 19300|250|122|249 
+E A3 19300|250|123|249 
+E A3 19300|250|124|249 
+E A3 19300|250|125|249 
+E A3 19300|250|126|249 
+E A3 19300|250|127|249 
+E A3 19300|250|128|249 
+E A3 19300|250|129|249 
+E A3 19300|250|130|249 
+E A3 19300|250|131|249 
+E A3 19300|250|133|249 
+E A3 19300|250|134|249 
+E A5 10|0|19500|136|fade|200 
+E A7 19600|M 0 0 L -0.004167 0.118519 E|250|135 
+E A1 19600|250|135|339047|261333 
+E A5 10|0|19700|139|fade|150 
+E A6 exit|19850|135|hidden 
+E A15 entr|0|20000|140|visible 
+E A15 exit|1|20250|140|hidden 
+E A8 22|8|20250|141|wipe(left)|250 
+E A4 20250|146|250 
+E A16 20250|900000|250|146 
+E A4 20250|150|250 
+E A16 20250|900000|250|150 
+E A8 10|0|20500|142|fade|200 
+E A16 20500|-600000|300|146 
+E A16 20500|-600000|300|150 
+E A14 1|20550|150|141|149 
+E A7 20750|M 0 0 L 0.000000 0.092593 E|250|139 
+E A11 1|20750|M 0 0 L 0.000000 0.092593 E|250|142 
+E A19 21000|200|146|199 
+E A19 21000|200|150|199 
+E A2 1|21000|153|250|#ppt_x|0-#ppt_h/2 
+E A16 21000|1200000|250|153 
+E A8 22|8|21250|154|wipe(left)|250 
+E A4 21250|158|250 
+E A16 21250|720000|250|158 
+E A4 21250|160|250 
+E A16 21250|720000|250|160 
+E A16 21500|840000|150|153 
+E A14 1|21500|100|154|99 
+E A8 10|0|21600|155|fade|100 
+E A7 21750|M 0 0 L -0.002083 0.137037 E|250|139 
+E A11 2|21750|M 0 0 L -0.002083 0.137037 E|250|142 
+E A7 21750|M 0 0 L 0.001042 0.098148 E|250|153 
+=== PAGE 19 ===
+ 
+ 
+E A11 1|21750|M 0 0 L 0.001042 0.098148 E|250|155 
+E A2 1|21750|163|250|#ppt_x|0-#ppt_h/2 
+E A16 21750|1200000|250|163 
+E A19 21950|150|158|149 
+E A19 21950|150|160|149 
+E A8 22|8|22000|164|wipe(left)|250 
+E A4 22000|171|200 
+E A16 22000|-720000|250|171 
+E A4 22000|174|200 
+E A16 22000|-720000|250|174 
+E A7 22000|M 0 0 L 0.001042 0.046296 E|250|163 
+E A11 1|22000|M 0 0 L 0.001042 0.046296 E|250|164 
+E A14 2|22250|100|164|99 
+E A8 10|0|22250|165|fade|100 
+E A19 22450|150|171|149 
+E A19 22450|150|174|149 
+E A7 22650|M 0 0 L 0.000000 0.648148 E|300|139 
+E A11 3|22650|M 0 0 L 0.000000 0.648148 E|300|142 
+E A7 22650|M 0 0 L 0.000000 0.648148 E|300|153 
+E A11 2|22650|M 0 0 L 0.000000 0.648148 E|300|155 
+E A7 22650|M 0 0 L 0.000000 0.648148 E|300|163 
+E A11 1|22650|M 0 0 L 0.000000 0.648148 E|300|165 
+E A5 22|1|22750|175|wipe(up)|300 
+E A2 1|22750|176|300|#ppt_x|0-#ppt_h/2 
+E A7 23750|M 0 0 L -0.250000 0.000000 E|400|176 
+E A8 22|8|23900|177|wipe(left)|400 
+E A8 10|0|24250|178|fade|300 
+E A6 entr|25700|179|visible 
+BLD 11:0 11:1 11:2 11:3 12:0 12:1 12:2 12:3 13:0 13:1 13:2 13:3 14:0 14:1 14:2 14:3 14:4 15:0 15:1 
+15:2 
+BLD 15:3 15:4 16:0 16:1 16:2 16:3 16:4 16:5 16:6 16:7 16:8 19:0 19:1 19:2 19:3 20:0 20:1 20:2 20:3 
+21:0 
+BLD 21:1 21:2 21:3 23:0 23:1 23:2 23:3 24:0 24:1 24:2 24:3 25:0 25:1 25:2 25:3 65:0 65:1 66:0 66:1 
+67:0 
+BLD 67:1 68:0 68:1 69:0 69:1 71:0 71:1 72:0 72:1 72:2 73:0 73:1 74:0 74:1 75:0 75:1 76:0 76:1 78:0 
+78:1 
+BLD 79:0 79:1 80:0 80:1 80:2 80:3 82:0 82:1 83:0 83:1 88:0 88:1 89:0 89:1 90:0 90:1 91:0 91:1 92:0 
+92:1 
+BLD 93:0 93:1 94:0 94:1 95:0 95:1 96:0 96:1 97:0 97:1 98:0 98:1 99:0 99:1 100:0 100:1 101:0 101:1 
+102:0 102:1 
+BLD 103:0 103:1 104:0 104:1 106:0 106:1 106:2 107:0 107:1 107:2 110:0 110:1 112:0 112:1 114:0 114:1 
+116:0 116:1 118:0 118:1 
+BLD 120:0 120:1 132:0 132:1 140:0 140:1 141:0 141:1 142:0 142:1 142:2 142:3 154:0 154:1 155:0 155:1 
+155:2 164:0 164:1 164:2 
+BLD 165:0 165:1 177:0 178:0 
+ 
+# --- TỪ ĐIỂN --- 
+# Style chữ (rPr) 
+R1 = <a:rPr lang="vi-VN"/> 
+R2 = <a:rPr lang="en-US" sz="1700" b="1" dirty="0"><a:solidFill><a:srgbClr 
+val="FFFFFF"/></a:solidFill><a:latin typeface="Segoe UI"/><a:cs typeface="Segoe UI"/></a:rPr> 
+R3 = <a:rPr lang="en-US" sz="1300" dirty="0"><a:solidFill><a:srgbClr 
+val="FFFFFF"/></a:solidFill><a:latin typeface="Segoe UI"/><a:cs typeface="Segoe UI"/></a:rPr> 
+R4 = <a:rPr lang="en-US" sz="1200" b="1" dirty="0"><a:solidFill><a:srgbClr 
+val="000000"/></a:solidFill><a:latin typeface="Segoe UI"/><a:cs typeface="Segoe UI"/></a:rPr> 
+R5 = <a:rPr lang="en-US" sz="1700" dirty="0"><a:solidFill><a:srgbClr 
+val="1A87E4"/></a:solidFill><a:latin typeface="Segoe UI"/><a:cs typeface="Segoe UI"/></a:rPr> 
+R6 = <a:rPr lang="en-US" sz="2700" dirty="0"><a:solidFill><a:srgbClr 
+val="FFFFFF"/></a:solidFill><a:latin typeface="Segoe UI"/><a:cs typeface="Segoe UI"/></a:rPr> 
+R7 = <a:rPr lang="en-US" sz="1600" dirty="0"><a:solidFill><a:srgbClr 
+val="8E8E93"/></a:solidFill><a:latin typeface="Segoe UI"/><a:cs typeface="Segoe UI"/></a:rPr> 
+R8 = <a:rPr lang="en-US" sz="2000" dirty="0"><a:solidFill><a:srgbClr 
+val="FFFFFF"/></a:solidFill><a:latin typeface="Segoe UI"/><a:cs typeface="Segoe UI"/></a:rPr> 
+=== PAGE 20 ===
+ 
+ 
+R9 = <a:rPr lang="en-US" sz="1300" dirty="0"><a:solidFill><a:srgbClr 
+val="8E8E93"/></a:solidFill><a:latin typeface="Segoe UI"/><a:cs typeface="Segoe UI"/></a:rPr> 
+R10 = <a:rPr lang="en-US" sz="2600" dirty="0"><a:solidFill><a:srgbClr 
+val="E5E5EA"/></a:solidFill><a:latin typeface="Segoe UI"/><a:cs typeface="Segoe UI"/></a:rPr> 
+R11 = <a:rPr lang="en-US" sz="2800" dirty="0"><a:solidFill><a:srgbClr 
+val="FFFFFF"/></a:solidFill><a:latin typeface="Segoe UI"/><a:cs typeface="Segoe UI"/></a:rPr> 
+R12 = <a:rPr lang="en-US" sz="1700" dirty="0"><a:solidFill><a:srgbClr 
+val="8E8E93"/></a:solidFill><a:latin typeface="Segoe UI"/><a:cs typeface="Segoe UI"/></a:rPr> 
+R13 = <a:rPr lang="en-US" sz="1200" b="1" dirty="0"><a:solidFill><a:srgbClr 
+val="FFFFFF"/></a:solidFill><a:latin typeface="Segoe UI"/><a:cs typeface="Segoe UI"/></a:rPr> 
+R14 = <a:rPr lang="en-US" sz="1100" dirty="0"><a:solidFill><a:srgbClr 
+val="F5A623"/></a:solidFill><a:latin typeface="Segoe UI"/><a:cs typeface="Segoe UI"/></a:rPr> 
+R15 = <a:rPr lang="en-US" sz="1000" dirty="0"><a:solidFill><a:srgbClr 
+val="8E8E93"/></a:solidFill><a:latin typeface="Segoe UI"/><a:cs typeface="Segoe UI"/></a:rPr> 
+R16 = <a:rPr lang="en-US" sz="1200" dirty="0"><a:solidFill><a:srgbClr 
+val="FFFFFF"/></a:solidFill><a:latin typeface="Segoe UI"/><a:cs typeface="Segoe UI"/></a:rPr> 
+R17 = <a:rPr lang="en-US" sz="1100" dirty="0"><a:solidFill><a:srgbClr 
+val="FFFFFF"/></a:solidFill><a:latin typeface="Segoe UI"/><a:cs typeface="Segoe UI"/></a:rPr> 
+R18 = <a:rPr lang="en-US" sz="2600" dirty="0"><a:solidFill><a:srgbClr 
+val="FFFFFF"/></a:solidFill><a:latin typeface="Segoe UI"/><a:cs typeface="Segoe UI"/></a:rPr> 
+R19 = <a:rPr lang="en-US" sz="1400" dirty="0"><a:solidFill><a:srgbClr 
+val="FFFFFF"/></a:solidFill><a:latin typeface="Segoe UI"/><a:cs typeface="Segoe UI"/></a:rPr> 
+R20 = <a:rPr lang="en-US" sz="1100" dirty="0"><a:solidFill><a:srgbClr 
+val="E5E5EA"/></a:solidFill><a:latin typeface="Segoe UI"/><a:cs typeface="Segoe UI"/></a:rPr> 
+R21 = <a:rPr lang="en-US" sz="1000" dirty="0"><a:solidFill><a:srgbClr 
+val="FFFFFF"/></a:solidFill><a:latin typeface="Segoe UI"/><a:cs typeface="Segoe UI"/></a:rPr> 
+R22 = <a:rPr lang="en-US" sz="900" dirty="0"><a:solidFill><a:srgbClr 
+val="8E8E93"/></a:solidFill><a:latin typeface="Segoe UI"/><a:cs typeface="Segoe UI"/></a:rPr> 
+R23 = <a:rPr lang="en-US" sz="1900" dirty="0"><a:solidFill><a:srgbClr 
+val="FFFFFF"/></a:solidFill><a:latin typeface="Segoe UI"/><a:cs typeface="Segoe UI"/></a:rPr> 
+R24 = <a:rPr lang="en-US" sz="1600" dirty="0"><a:solidFill><a:srgbClr 
+val="FFFFFF"/></a:solidFill><a:latin typeface="Segoe UI"/><a:cs typeface="Segoe UI"/></a:rPr> 
+R25 = <a:rPr lang="en-US" sz="2600" b="1" dirty="0"><a:solidFill><a:srgbClr 
+val="000000"/></a:solidFill><a:latin typeface="Segoe UI"/><a:cs typeface="Segoe UI"/></a:rPr> 
+R26 = <a:rPr lang="en-US" sz="1400" dirty="0"><a:solidFill><a:srgbClr 
+val="F3F3F3"/></a:solidFill><a:latin typeface="Segoe UI"/><a:cs typeface="Segoe UI"/></a:rPr> 
+R27 = <a:rPr lang="en-US" sz="1400" dirty="0"><a:solidFill><a:srgbClr 
+val="F5FF3B"/></a:solidFill><a:effectLst><a:glow rad="38100"><a:srgbClr val="F5FF3B"><a:alpha 
+val="55000"/></a:srgbClr></a:glow></a:effectLst><a:latin typeface="Segoe UI"/><a:cs typeface="Segoe 
+UI"/></a:rPr> 
+R28 = <a:rPr lang="en-US" sz="1400" dirty="0"><a:solidFill><a:srgbClr 
+val="FF4FC8"/></a:solidFill><a:effectLst><a:glow rad="38100"><a:srgbClr val="FF4FC8"><a:alpha 
+val="55000"/></a:srgbClr></a:glow></a:effectLst><a:latin typeface="Segoe UI"/><a:cs typeface="Segoe 
+UI"/></a:rPr> 
+R29 = <a:rPr lang="en-US" sz="1400" dirty="0"><a:solidFill><a:srgbClr 
+val="29B6F6"/></a:solidFill><a:effectLst><a:glow rad="38100"><a:srgbClr val="29B6F6"><a:alpha 
+val="55000"/></a:srgbClr></a:glow></a:effectLst><a:latin typeface="Segoe UI"/><a:cs typeface="Segoe 
+UI"/></a:rPr> 
+R30 = <a:rPr lang="en-US" sz="1200" dirty="0"><a:solidFill><a:srgbClr 
+val="B0B0B0"/></a:solidFill><a:latin typeface="Segoe UI"/><a:cs typeface="Segoe UI"/></a:rPr> 
+R31 = <a:rPr lang="en-US" sz="6000" dirty="0"><a:solidFill><a:srgbClr 
+val="FFFFFF"/></a:solidFill><a:effectLst><a:glow rad="38100"><a:srgbClr val="FFFFFF"><a:alpha 
+val="55000"/></a:srgbClr></a:glow></a:effectLst><a:latin typeface="Segoe UI"/><a:cs typeface="Segoe 
+UI"/></a:rPr> 
+R32 = <a:rPr lang="en-US" sz="4000" dirty="0"><a:solidFill><a:srgbClr 
+val="1A5FB4"/></a:solidFill><a:latin typeface="Segoe UI"/><a:cs typeface="Segoe UI"/></a:rPr> 
+R33 = <a:rPr lang="en-US" sz="4600" b="1" spc="600" dirty="0"><a:solidFill><a:srgbClr 
+val="1A5FB4"/></a:solidFill><a:latin typeface="Segoe UI Semibold"/><a:cs typeface="Segoe UI 
+Semibold"/></a:rPr> 
+R34 = <a:rPr lang="en-US" sz="4600" b="1" spc="600" dirty="0"><a:solidFill><a:srgbClr 
+val="111111"/></a:solidFill><a:latin typeface="Segoe UI Semibold"/><a:cs typeface="Segoe UI 
+Semibold"/></a:rPr> 
+=== PAGE 21 ===
+ 
+ 
+R35 = <a:rPr lang="en-US" sz="8800" dirty="0"><a:solidFill><a:srgbClr 
+val="BDBDBD"/></a:solidFill><a:latin typeface="Segoe UI Semibold"/><a:cs typeface="Segoe UI 
+Semibold"/></a:rPr> 
+R36 = <a:rPr lang="en-US" sz="8800" dirty="0"><a:solidFill><a:srgbClr 
+val="000000"/></a:solidFill><a:latin typeface="Segoe UI Semibold"/><a:cs typeface="Segoe UI 
+Semibold"/></a:rPr> 
+# Định dạng đoạn (pPr) 
+P1 = <a:pPr algn="l"/> 
+P2 = <a:pPr algn="r"/> 
+P3 = <a:pPr algn="ctr"/> 
+# Khung chữ (bodyPr+lstStyle) 
+B1 = <a:bodyPr/><a:lstStyle/> 
+B2 = <a:bodyPr wrap="none" lIns="0" tIns="0" rIns="0" bIns="0" rtlCol="0" 
+anchor="ctr"><a:noAutofit/></a:bodyPr><a:lstStyle/> 
+B3 = <a:bodyPr wrap="square" lIns="0" tIns="0" rIns="0" bIns="0" rtlCol="0" 
+anchor="ctr"><a:noAutofit/></a:bodyPr><a:lstStyle/> 
+B4 = <a:bodyPr wrap="square" lIns="0" tIns="0" rIns="0" bIns="0" rtlCol="0" 
+anchor="t"><a:noAutofit/></a:bodyPr><a:lstStyle/> 
+# Phần nv (§ID=id, §NM=tên) 
+N1 = <p:nvSpPr><p:cNvPr id="§ID" name="§NM"/><p:cNvSpPr/><p:nvPr/></p:nvSpPr> 
+N2 = <p:nvPicPr><p:cNvPr id="§ID" name="§NM"/><p:cNvPicPr><a:picLocks 
+noChangeAspect="1"/></p:cNvPicPr><p:nvPr/></p:nvPicPr> 
+N3 = <p:nvGrpSpPr><p:cNvPr id="§ID" name="§NM"/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr> 
+# Định nghĩa shape (spPr + style; §X = xfrm, §IMG = rId ảnh) 
+D1 = <p:spPr>§X<a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr 
+val="FFFFFF"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D2 = <p:spPr>§X<a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr 
+val="A0A0A0"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D3 = <p:spPr>§X<a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr 
+val="000000"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D4 = <p:blipFill><a:blip 
+r:embed="§IMG"/><a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr>§X<a:prstGeom 
+prst="rect"><a:avLst/></a:prstGeom><a:effectLst><a:softEdge rad="38100"/></a:effectLst></p:spPr> 
+D5 = <p:spPr>§X<a:prstGeom prst="roundRect"><a:avLst><a:gd name="adj" fmla="val 
+22000"/></a:avLst></a:prstGeom><a:solidFill><a:srgbClr val="FFFFFF"><a:alpha 
+val="55000"/></a:srgbClr></a:solidFill><a:ln><a:noFill/></a:ln><a:effectLst><a:softEdge 
+rad="254000"/></a:effectLst></p:spPr> 
+D6 = <p:spPr>§X<a:prstGeom prst="roundRect"><a:avLst><a:gd name="adj" fmla="val 
+22000"/></a:avLst></a:prstGeom><a:gradFill rotWithShape="1"><a:gsLst><a:gs pos="0"><a:srgbClr 
+val="FFFFFF"/></a:gs><a:gs pos="100000"><a:srgbClr val="D9D9D9"/></a:gs></a:gsLst><a:lin ang="5400000" 
+scaled="0"/></a:gradFill><a:ln><a:noFill/></a:ln><a:effectLst><a:outerShdw blurRad="127000" 
+dist="38100" dir="5400000" algn="ctr" rotWithShape="0"><a:srgbClr val="000000"><a:alpha 
+val="30000"/></a:srgbClr></a:outerShdw></a:effectLst></p:spPr> 
+D7 = <p:blipFill><a:blip 
+r:embed="§IMG"/><a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr>§X<a:prstGeom 
+prst="rect"><a:avLst/></a:prstGeom></p:spPr> 
+D8 = <p:spPr>§X<a:prstGeom prst="roundRect"><a:avLst><a:gd name="adj" fmla="val 
+22000"/></a:avLst></a:prstGeom><a:gradFill rotWithShape="1"><a:gsLst><a:gs pos="0"><a:srgbClr 
+val="FFFFFF"/></a:gs><a:gs pos="100000"><a:srgbClr val="D9D9D9"/></a:gs></a:gsLst><a:lin ang="5400000" 
+scaled="0"/></a:gradFill><a:ln><a:noFill/></a:ln><a:effectLst><a:outerShdw blurRad="152400" 
+dist="38100" dir="5400000" algn="ctr" rotWithShape="0"><a:srgbClr val="000000"><a:alpha 
+val="40000"/></a:srgbClr></a:outerShdw></a:effectLst></p:spPr> 
+D9 = <p:spPr>§X<a:prstGeom 
+prst="rect"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></p:spPr> 
+D10 = <p:spPr>§X<a:prstGeom prst="roundRect"><a:avLst><a:gd name="adj" fmla="val 
+50000"/></a:avLst></a:prstGeom><a:solidFill><a:srgbClr 
+val="1A87E4"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D11 = <p:spPr>§X<a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/><a:ln 
+w="19050"><a:solidFill><a:srgbClr val="1A87E4"/></a:solidFill></a:ln></p:spPr> 
+D12 = <p:spPr>§X<a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr 
+val="3A3A3C"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D13 = <p:spPr>§X<a:prstGeom prst="roundRect"><a:avLst><a:gd name="adj" fmla="val 
+9000"/></a:avLst></a:prstGeom><a:solidFill><a:srgbClr 
+val="1C1C1E"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr> 
+=== PAGE 22 ===
+ 
+ 
+D14 = <p:spPr>§X<a:prstGeom prst="roundRect"><a:avLst><a:gd name="adj" fmla="val 
+22000"/></a:avLst></a:prstGeom><a:solidFill><a:srgbClr 
+val="9A9A9A"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D15 = <p:spPr>§X<a:prstGeom prst="roundRect"><a:avLst><a:gd name="adj" fmla="val 
+22000"/></a:avLst></a:prstGeom><a:solidFill><a:srgbClr 
+val="1E1E1E"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D16 = <p:spPr>§X<a:prstGeom prst="roundRect"><a:avLst><a:gd name="adj" fmla="val 
+50000"/></a:avLst></a:prstGeom><a:solidFill><a:srgbClr 
+val="FFFFFF"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D17 = <p:spPr>§X<a:prstGeom prst="roundRect"><a:avLst><a:gd name="adj" fmla="val 
+50000"/></a:avLst></a:prstGeom><a:gradFill rotWithShape="1"><a:gsLst><a:gs pos="0"><a:srgbClr 
+val="2A2A2A"/></a:gs><a:gs pos="100000"><a:srgbClr val="2A2A2A"/></a:gs></a:gsLst><a:lin ang="0" 
+scaled="0"/></a:gradFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D18 = <p:spPr>§X<a:prstGeom prst="ellipse"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr 
+val="FFFFFF"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D19 = <p:spPr>§X<a:prstGeom prst="ellipse"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr 
+val="000000"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D20 = <p:spPr>§X<a:prstGeom prst="roundRect"><a:avLst><a:gd name="adj" fmla="val 
+50000"/></a:avLst></a:prstGeom><a:solidFill><a:srgbClr 
+val="000000"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D21 = <p:spPr>§X<a:prstGeom prst="roundRect"><a:avLst><a:gd name="adj" fmla="val 
+25000"/></a:avLst></a:prstGeom><a:solidFill><a:srgbClr 
+val="2F2F2F"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D22 = <p:spPr>§X<a:prstGeom prst="roundRect"><a:avLst><a:gd name="adj" fmla="val 
+50000"/></a:avLst></a:prstGeom><a:solidFill><a:srgbClr 
+val="2F2F2F"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D23 = <p:spPr>§X<a:prstGeom prst="roundRect"><a:avLst><a:gd name="adj" fmla="val 
+50000"/></a:avLst></a:prstGeom><a:noFill/><a:ln w="12700"><a:solidFill><a:srgbClr 
+val="2F2F2F"/></a:solidFill></a:ln></p:spPr> 
+D24 = <p:spPr>§X<a:prstGeom prst="ellipse"><a:avLst/></a:prstGeom><a:gradFill 
+rotWithShape="1"><a:gsLst><a:gs pos="0"><a:srgbClr val="FFB347"/></a:gs><a:gs pos="100000"><a:srgbClr 
+val="C0392B"/></a:gs></a:gsLst><a:lin ang="5400000" 
+scaled="0"/></a:gradFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D25 = <p:spPr>§X<a:prstGeom prst="blockArc"><a:avLst><a:gd name="adj1" fmla="val 10800000"/><a:gd 
+name="adj2" fmla="val 0"/><a:gd name="adj3" fmla="val 
+18000"/></a:avLst></a:prstGeom><a:solidFill><a:srgbClr 
+val="000000"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D26 = <p:spPr>§X<a:prstGeom prst="ellipse"><a:avLst/></a:prstGeom><a:gradFill 
+rotWithShape="1"><a:gsLst><a:gs pos="0"><a:srgbClr val="FFFFFF"><a:alpha 
+val="45000"/></a:srgbClr></a:gs><a:gs pos="100000"><a:srgbClr val="FFFFFF"><a:alpha 
+val="0"/></a:srgbClr></a:gs></a:gsLst><a:path path="circle"><a:fillToRect l="50000" t="50000" 
+r="50000" b="50000"/></a:path></a:gradFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D27 = <p:spPr>§X<a:prstGeom prst="ellipse"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr 
+val="FFFFFF"/></a:solidFill><a:ln><a:noFill/></a:ln><a:effectLst><a:glow rad="50800"><a:srgbClr 
+val="FFFFFF"><a:alpha val="80000"/></a:srgbClr></a:glow></a:effectLst></p:spPr> 
+D28 = <p:blipFill><a:blip 
+r:embed="§IMG"/><a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr>§X<a:prstGeom 
+prst="rect"><a:avLst/></a:prstGeom><a:effectLst><a:glow rad="63500"><a:srgbClr val="FFFFFF"><a:alpha 
+val="60000"/></a:srgbClr></a:glow></a:effectLst></p:spPr> 
+D29 = <p:blipFill><a:blip 
+r:embed="§IMG"/><a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr>§X<a:prstGeom 
+prst="rect"><a:avLst/></a:prstGeom><a:effectLst><a:glow rad="88900"><a:srgbClr val="FFFFFF"><a:alpha 
+val="70000"/></a:srgbClr></a:glow></a:effectLst></p:spPr> 
+D30 = <p:spPr>§X<a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:gradFill 
+rotWithShape="1"><a:gsLst><a:gs pos="0"><a:srgbClr val="6E5A45"/></a:gs><a:gs pos="50000"><a:srgbClr 
+val="A8957C"/></a:gs><a:gs pos="100000"><a:srgbClr val="5E4C3A"/></a:gs></a:gsLst><a:lin ang="0" 
+scaled="0"/></a:gradFill><a:ln><a:noFill/></a:ln><a:effectLst><a:softEdge 
+rad="0"/></a:effectLst></p:spPr> 
+D31 = <p:spPr>§X<a:prstGeom prst="roundRect"><a:avLst><a:gd name="adj" fmla="val 
+22000"/></a:avLst></a:prstGeom><a:gradFill rotWithShape="1"><a:gsLst><a:gs pos="0"><a:srgbClr 
+val="5AC8FA"/></a:gs><a:gs pos="100000"><a:srgbClr val="1E88E5"/></a:gs></a:gsLst><a:lin ang="5400000" 
+scaled="0"/></a:gradFill><a:ln><a:noFill/></a:ln></p:spPr> 
+=== PAGE 23 ===
+ 
+ 
+D32 = <p:spPr>§X<a:prstGeom prst="roundRect"><a:avLst><a:gd name="adj" fmla="val 
+22000"/></a:avLst></a:prstGeom><a:solidFill><a:srgbClr 
+val="3A3A3C"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D33 = <p:spPr>§X<a:prstGeom prst="roundRect"><a:avLst><a:gd name="adj" fmla="val 
+22000"/></a:avLst></a:prstGeom><a:solidFill><a:srgbClr 
+val="FFFFFF"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D34 = <p:spPr>§X<a:prstGeom prst="roundRect"><a:avLst><a:gd name="adj" fmla="val 
+22000"/></a:avLst></a:prstGeom><a:gradFill rotWithShape="1"><a:gsLst><a:gs pos="0"><a:srgbClr 
+val="7ED957"/></a:gs><a:gs pos="100000"><a:srgbClr val="34A853"/></a:gs></a:gsLst><a:lin ang="5400000" 
+scaled="0"/></a:gradFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D35 = <p:spPr>§X<a:prstGeom prst="roundRect"><a:avLst><a:gd name="adj" fmla="val 
+22000"/></a:avLst></a:prstGeom><a:gradFill rotWithShape="1"><a:gsLst><a:gs pos="0"><a:srgbClr 
+val="C86DD7"/></a:gs><a:gs pos="100000"><a:srgbClr val="8E44AD"/></a:gs></a:gsLst><a:lin ang="5400000" 
+scaled="0"/></a:gradFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D36 = <p:spPr>§X<a:prstGeom prst="roundRect"><a:avLst><a:gd name="adj" fmla="val 
+22000"/></a:avLst></a:prstGeom><a:solidFill><a:srgbClr 
+val="1C1C1E"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D37 = <p:spPr>§X<a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr 
+val="FFD60A"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D38 = <p:spPr>§X<a:prstGeom prst="ellipse"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr 
+val="1E88E5"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D39 = <p:spPr>§X<a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr 
+val="D0D0D0"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D40 = <p:spPr>§X<a:prstGeom prst="ellipse"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr 
+val="E53935"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D41 = <p:spPr>§X<a:prstGeom prst="ellipse"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr 
+val="FB8C00"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D42 = <p:spPr>§X<a:prstGeom prst="ellipse"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr 
+val="FF3B30"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D43 = <p:spPr>§X<a:prstGeom prst="roundRect"><a:avLst><a:gd name="adj" fmla="val 
+50000"/></a:avLst></a:prstGeom><a:solidFill><a:srgbClr 
+val="FFFFFF"/></a:solidFill><a:ln><a:noFill/></a:ln><a:effectLst><a:outerShdw blurRad="127000" 
+dist="25400" dir="5400000" algn="ctr" rotWithShape="0"><a:srgbClr val="000000"><a:alpha 
+val="25000"/></a:srgbClr></a:outerShdw></a:effectLst></p:spPr> 
+D44 = <p:spPr>§X<a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:gradFill 
+rotWithShape="1"><a:gsLst><a:gs pos="0"><a:srgbClr val="D6E9FE"/></a:gs><a:gs pos="35000"><a:srgbClr 
+val="99C5F2"/></a:gs><a:gs pos="70000"><a:srgbClr val="4BACF6"/></a:gs><a:gs pos="100000"><a:srgbClr 
+val="1157B8"/></a:gs></a:gsLst><a:lin ang="18900000" 
+scaled="0"/></a:gradFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D45 = <p:spPr>§X<a:prstGeom prst="roundRect"><a:avLst><a:gd name="adj" fmla="val 
+50000"/></a:avLst></a:prstGeom><a:solidFill><a:srgbClr 
+val="DAD7DB"/></a:solidFill><a:ln><a:noFill/></a:ln><a:effectLst><a:outerShdw blurRad="190500" 
+dist="63500" dir="5400000" algn="ctr" rotWithShape="0"><a:srgbClr val="000000"><a:alpha 
+val="30000"/></a:srgbClr></a:outerShdw></a:effectLst></p:spPr> 
+D46 = <p:spPr>§X<a:prstGeom prst="roundRect"><a:avLst><a:gd name="adj" fmla="val 
+50000"/></a:avLst></a:prstGeom><a:gradFill rotWithShape="1"><a:gsLst><a:gs pos="0"><a:srgbClr 
+val="FFFFFF"/></a:gs><a:gs pos="100000"><a:srgbClr val="F4F1F5"/></a:gs></a:gsLst><a:lin ang="5400000" 
+scaled="0"/></a:gradFill><a:ln><a:noFill/></a:ln><a:effectLst><a:innerShdw blurRad="76200" 
+dist="25400" dir="5400000"><a:srgbClr val="000000"><a:alpha 
+val="18000"/></a:srgbClr></a:innerShdw></a:effectLst></p:spPr> 
+D47 = <p:spPr>§X<a:prstGeom prst="roundRect"><a:avLst><a:gd name="adj" fmla="val 
+10000"/></a:avLst></a:prstGeom><a:solidFill><a:srgbClr 
+val="A0522D"/></a:solidFill><a:ln><a:noFill/></a:ln><a:effectLst><a:outerShdw blurRad="63500" 
+dist="25400" dir="5400000" algn="ctr" rotWithShape="0"><a:srgbClr val="000000"><a:alpha 
+val="30000"/></a:srgbClr></a:outerShdw></a:effectLst></p:spPr> 
+D48 = <p:spPr>§X<a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:gradFill 
+rotWithShape="1"><a:gsLst><a:gs pos="0"><a:srgbClr val="87CEEB"/></a:gs><a:gs pos="100000"><a:srgbClr 
+val="E0F7FA"/></a:gs></a:gsLst><a:lin ang="5400000" 
+scaled="0"/></a:gradFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D49 = <p:spPr>§X<a:prstGeom prst="triangle"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr 
+val="4CAF50"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D50 = <p:spPr>§X<a:prstGeom prst="roundRect"><a:avLst><a:gd name="adj" fmla="val 
+15000"/></a:avLst></a:prstGeom><a:solidFill><a:srgbClr 
+val="9CCC65"/></a:solidFill><a:ln><a:noFill/></a:ln><a:effectLst><a:outerShdw blurRad="63500" 
+=== PAGE 24 ===
+ 
+ 
+dist="25400" dir="5400000" algn="ctr" rotWithShape="0"><a:srgbClr val="000000"><a:alpha 
+val="30000"/></a:srgbClr></a:outerShdw></a:effectLst></p:spPr> 
+D51 = <p:spPr>§X<a:prstGeom prst="ellipse"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr 
+val="9CCC65"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D52 = <p:spPr>§X<a:prstGeom prst="ellipse"><a:avLst/></a:prstGeom><a:gradFill 
+rotWithShape="1"><a:gsLst><a:gs pos="0"><a:srgbClr val="FFF59D"/></a:gs><a:gs pos="100000"><a:srgbClr 
+val="FBC02D"/></a:gs></a:gsLst><a:lin ang="5400000" 
+scaled="0"/></a:gradFill><a:ln><a:noFill/></a:ln><a:effectLst><a:glow rad="63500"><a:srgbClr 
+val="FFF59D"><a:alpha val="50000"/></a:srgbClr></a:glow></a:effectLst></p:spPr> 
+D53 = <p:spPr>§X<a:prstGeom prst="roundRect"><a:avLst><a:gd name="adj" fmla="val 
+30000"/></a:avLst></a:prstGeom><a:solidFill><a:srgbClr 
+val="9E9E9E"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D54 = <p:spPr>§X<a:prstGeom prst="cloud"><a:avLst/></a:prstGeom><a:gradFill 
+rotWithShape="1"><a:gsLst><a:gs pos="0"><a:srgbClr val="F8BBD0"/></a:gs><a:gs pos="100000"><a:srgbClr 
+val="EC407A"/></a:gs></a:gsLst><a:lin ang="5400000" 
+scaled="0"/></a:gradFill><a:ln><a:noFill/></a:ln><a:effectLst><a:outerShdw blurRad="63500" 
+dist="25400" dir="5400000" algn="ctr" rotWithShape="0"><a:srgbClr val="000000"><a:alpha 
+val="30000"/></a:srgbClr></a:outerShdw></a:effectLst></p:spPr> 
+D55 = <p:spPr>§X<a:prstGeom prst="foldedCorner"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr 
+val="D1C4E9"/></a:solidFill><a:ln><a:noFill/></a:ln><a:effectLst><a:outerShdw blurRad="63500" 
+dist="25400" dir="5400000" algn="ctr" rotWithShape="0"><a:srgbClr val="000000"><a:alpha 
+val="30000"/></a:srgbClr></a:outerShdw></a:effectLst></p:spPr> 
+D56 = <p:spPr>§X<a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr 
+val="9575CD"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D57 = <p:spPr>§X<a:prstGeom prst="roundRect"><a:avLst><a:gd name="adj" fmla="val 
+40000"/></a:avLst></a:prstGeom><a:solidFill><a:srgbClr 
+val="FFCA28"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D58 = <p:spPr>§X<a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr 
+val="FF7043"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr> 
+D59 = <p:spPr>§X<a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr 
+val="FFFFFF"><a:alpha val="0"/></a:srgbClr></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr> 
+# Group (grpSpPr; §X = xfrm) 
+G1 = <p:grpSpPr>§X</p:grpSpPr> 
+ 
+# === HẾT DỮ LIỆU === 
+ 
