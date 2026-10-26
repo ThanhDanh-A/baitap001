@@ -8,7 +8,7 @@ import math
 
 
 # ==============================================================================
-# TODO 1: Kế thừa cơ bản với DongVat, Cho và Meo
+# PHẦN 1: Kế thừa cơ bản với DongVat, Cho và Meo
 # ==============================================================================
 class DongVat:
     """Class cha mô tả các đặc điểm chung của động vật."""
@@ -47,7 +47,7 @@ class Meo(DongVat):
 
 
 # ==============================================================================
-# TODO 2: Kế thừa với các hình học
+# PHẦN 2: Kế thừa với các hình học
 # ==============================================================================
 class HinhHoc:
     """Class cha cho các hình học."""
@@ -101,10 +101,10 @@ class HinhChuNhat(HinhHoc):
 
 
 # ==============================================================================
-# TODO 3: Kiểm tra quan hệ kế thừa bằng isinstance() và issubclass()
+# PHẦN 3: Kiểm tra quan hệ kế thừa bằng isinstance() và issubclass()
 # ==============================================================================
 # ==============================================================================
-# TODO 4 (Thử thách): Đa kế thừa với Flyer, Swimmer và Duck
+# PHẦN 4: Đa kế thừa với Flyer, Swimmer và Duck
 # ==============================================================================
 class Flyer:
     def fly(self):
@@ -122,7 +122,7 @@ class Duck(Flyer, Swimmer):
 
 
 def main():
-    print("=== TODO 1: Kế thừa cơ bản ===")
+    print("=== PHẦN 1: Kế thừa cơ bản ===")
     cho = Cho("Milu", 3, "Poodle")
     meo = Meo("Miu", 2, "Trắng")
 
@@ -135,19 +135,19 @@ def main():
     meo.keu()
     print(f"Màu lông mèo: {meo.mau_long}")
 
-    print("\n=== TODO 2: Hình học ===")
+    print("\n=== PHẦN 2: Hình học ===")
     cac_hinh = [HinhTron(5), HinhChuNhat(4, 6)]
     for hinh in cac_hinh:
         print(hinh)
 
-    print("\n=== TODO 3: Kiểm tra kế thừa ===")
+    print("\n=== PHẦN 3: Kiểm tra kế thừa ===")
     print(f"isinstance(cho, DongVat): {isinstance(cho, DongVat)}")
     print(f"isinstance(cho, Cho): {isinstance(cho, Cho)}")
     print(f"issubclass(Cho, DongVat): {issubclass(Cho, DongVat)}")
     print(f"issubclass(Meo, DongVat): {issubclass(Meo, DongVat)}")
     print(f"issubclass(DongVat, Cho): {issubclass(DongVat, Cho)}")
 
-    print("\n=== TODO 4: Đa kế thừa ===")
+    print("\n=== PHẦN 4: Đa kế thừa ===")
     vit = Duck("Vịt Donald")
     print(f"Tên: {vit.ten}")
     vit.fly()
