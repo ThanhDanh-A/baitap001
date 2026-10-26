@@ -4,23 +4,155 @@ Bài tập 01: Kế thừa cơ bản 🧬
 Mục tiêu: Tạo class con kế thừa class cha
 """
 
-# TODO 1: Tạo class cha DongVat(ten, tuoi) với methods: an(), ngu()
-# Tạo class con Cho(ten, tuoi, giong) thêm method: sua()
-# Tạo class con Meo(ten, tuoi, mau_long) thêm method: keu()
-# Tạo object và gọi cả method cha lẫn con
+import math
 
 
-# TODO 2: Tạo class cha HinhHoc
-# Tạo class con: HinhTron(ban_kinh), HinhChuNhat(dai, rong)
-# Mỗi class có: tinh_dien_tich(), tinh_chu_vi(), __str__()
+# ==============================================================================
+# TODO 1: Kế thừa cơ bản với DongVat, Cho và Meo
+# ==============================================================================
+class DongVat:
+    """Class cha mô tả các đặc điểm chung của động vật."""
+
+    def __init__(self, ten, tuoi):
+        self.ten = ten
+        self.tuoi = tuoi
+
+    def an(self):
+        print(f"{self.ten} đang ăn.")
+
+    def ngu(self):
+        print(f"{self.ten} đang ngủ.")
 
 
-# TODO 3: Kiểm tra kế thừa
-# Dùng isinstance() và issubclass() kiểm tra quan hệ
-# In ra kết quả
+class Cho(DongVat):
+    """Chó kế thừa DongVat và có thêm giống chó."""
+
+    def __init__(self, ten, tuoi, giong):
+        super().__init__(ten, tuoi)
+        self.giong = giong
+
+    def sua(self):
+        print(f"{self.ten} sủa: Gâu gâu!")
 
 
-# TODO 4 (Thử thách): Đa kế thừa
-# class Flyer: def fly(self): ...
-# class Swimmer: def swim(self): ...
-# class Duck(Flyer, Swimmer): ...
+class Meo(DongVat):
+    """Mèo kế thừa DongVat và có thêm màu lông."""
+
+    def __init__(self, ten, tuoi, mau_long):
+        super().__init__(ten, tuoi)
+        self.mau_long = mau_long
+
+    def keu(self):
+        print(f"{self.ten} kêu: Meo meo!")
+
+
+# ==============================================================================
+# TODO 2: Kế thừa với các hình học
+# ==============================================================================
+class HinhHoc:
+    """Class cha cho các hình học."""
+
+    def tinh_dien_tich(self):
+        raise NotImplementedError("Lớp con cần định nghĩa tinh_dien_tich().")
+
+    def tinh_chu_vi(self):
+        raise NotImplementedError("Lớp con cần định nghĩa tinh_chu_vi().")
+
+
+class HinhTron(HinhHoc):
+    def __init__(self, ban_kinh):
+        if ban_kinh <= 0:
+            raise ValueError("Bán kính phải lớn hơn 0.")
+        self.ban_kinh = ban_kinh
+
+    def tinh_dien_tich(self):
+        return math.pi * self.ban_kinh ** 2
+
+    def tinh_chu_vi(self):
+        return 2 * math.pi * self.ban_kinh
+
+    def __str__(self):
+        return (
+            f"Hình tròn (bán kính = {self.ban_kinh}): "
+            f"diện tích = {self.tinh_dien_tich():.2f}, "
+            f"chu vi = {self.tinh_chu_vi():.2f}"
+        )
+
+
+class HinhChuNhat(HinhHoc):
+    def __init__(self, dai, rong):
+        if dai <= 0 or rong <= 0:
+            raise ValueError("Chiều dài và chiều rộng phải lớn hơn 0.")
+        self.dai = dai
+        self.rong = rong
+
+    def tinh_dien_tich(self):
+        return self.dai * self.rong
+
+    def tinh_chu_vi(self):
+        return 2 * (self.dai + self.rong)
+
+    def __str__(self):
+        return (
+            f"Hình chữ nhật ({self.dai} x {self.rong}): "
+            f"diện tích = {self.tinh_dien_tich():.2f}, "
+            f"chu vi = {self.tinh_chu_vi():.2f}"
+        )
+
+
+# ==============================================================================
+# TODO 3: Kiểm tra quan hệ kế thừa bằng isinstance() và issubclass()
+# ==============================================================================
+# ==============================================================================
+# TODO 4 (Thử thách): Đa kế thừa với Flyer, Swimmer và Duck
+# ==============================================================================
+class Flyer:
+    def fly(self):
+        print("Vịt đang bay.")
+
+
+class Swimmer:
+    def swim(self):
+        print("Vịt đang bơi.")
+
+
+class Duck(Flyer, Swimmer):
+    def __init__(self, ten):
+        self.ten = ten
+
+
+def main():
+    print("=== TODO 1: Kế thừa cơ bản ===")
+    cho = Cho("Milu", 3, "Poodle")
+    meo = Meo("Miu", 2, "Trắng")
+
+    cho.an()
+    cho.ngu()
+    cho.sua()
+    print(f"Giống chó: {cho.giong}")
+    meo.an()
+    meo.ngu()
+    meo.keu()
+    print(f"Màu lông mèo: {meo.mau_long}")
+
+    print("\n=== TODO 2: Hình học ===")
+    cac_hinh = [HinhTron(5), HinhChuNhat(4, 6)]
+    for hinh in cac_hinh:
+        print(hinh)
+
+    print("\n=== TODO 3: Kiểm tra kế thừa ===")
+    print(f"isinstance(cho, DongVat): {isinstance(cho, DongVat)}")
+    print(f"isinstance(cho, Cho): {isinstance(cho, Cho)}")
+    print(f"issubclass(Cho, DongVat): {issubclass(Cho, DongVat)}")
+    print(f"issubclass(Meo, DongVat): {issubclass(Meo, DongVat)}")
+    print(f"issubclass(DongVat, Cho): {issubclass(DongVat, Cho)}")
+
+    print("\n=== TODO 4: Đa kế thừa ===")
+    vit = Duck("Vịt Donald")
+    print(f"Tên: {vit.ten}")
+    vit.fly()
+    vit.swim()
+
+
+if __name__ == "__main__":
+    main()
